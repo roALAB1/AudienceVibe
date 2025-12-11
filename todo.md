@@ -74,3 +74,17 @@ Note: AudienceLab API only supports 16 input fields for matching (EMAIL, PERSONA
 
 Fixed: Rewrote CSV parser to use character-by-character parsing with quote state tracking instead of line-by-line splitting. Now correctly handles multi-line fields, escaped quotes, and complex data.
 
+
+
+## Spark V2 - Smart Query Assistant Implementation
+- [x] Create Spark V2 feature directory structure
+- [x] Build ModeSelector component (Intent vs B2B)
+- [x] Build QueryInput component with textarea
+- [x] Build QueryQualityChecker component with 7 validation rules
+- [x] Build AdvancedOptions component (context phrases, lens, granularity)
+- [ ] Create Spark tRPC router for API integration
+- [x] Add Spark search page route
+- [ ] Build ExportToAudienceLab dialog component
+- [ ] Add query templates library
+- [ ] Test all components and validation
+- [ ] Run validation: npm run validate

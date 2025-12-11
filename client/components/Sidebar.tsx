@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tab } from '../types';
 // Fix: Removed unused and non-existent 'Sliders' icon from import.
-import { BarChart2, CheckSquare, FileText, LayoutDashboard, Settings, UploadCloud } from './ui/icons';
+import { BarChart2, CheckSquare, FileText, LayoutDashboard, Settings, UploadCloud, Sparkles } from './ui/icons';
 
 interface SidebarProps {
   activeTab: Tab;
@@ -14,6 +14,7 @@ interface SidebarProps {
 const navItems = [
   { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} /> },
   { id: 'enrichment', label: 'Enrichment', icon: <UploadCloud size={20} /> },
+  { id: 'spark', label: 'Spark V2', icon: <Sparkles size={20} />, href: '/spark' },
   { id: 'quality', label: 'Quality', icon: <CheckSquare size={20} /> },
   { id: 'analytics', label: 'Analytics', icon: <BarChart2 size={20} /> },
   { id: 'activity', label: 'Activity', icon: <FileText size={20} /> },
@@ -31,10 +32,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isSidebarOpe
           {navItems.map((item) => (
             <a
               key={item.id}
-              href="#"
+              href={(item as any).href || "#"}
               onClick={(e) => {
-                e.preventDefault();
-                setActiveTab(item.id as Tab);
+                if (!(item as any).href) {
+                  e.preventDefault();
+                  setActiveTab(item.id as Tab);
+                }
                 setSidebarOpen(false);
               }}
               className={`flex items-center px-6 py-4 text-slate-600 hover:bg-slate-100 transition-colors duration-200 ${
