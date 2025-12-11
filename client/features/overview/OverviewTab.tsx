@@ -1,10 +1,11 @@
 
 import React, { useContext } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
+
 import { CreditSystemContext } from '../../App';
-import { ActivityLog } from '../../types';
+import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
 import { CheckCircle, AlertTriangle } from '../../components/ui/icons';
+import { ActivityLog } from '../../types';
 
 const kpiData = [
     { title: "Total Enrichments", value: "12,450", trend: "+12%", subtitle: "This month" },

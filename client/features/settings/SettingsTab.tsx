@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
+
 import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
-import useLocalStorage from '../../hooks/useLocalStorage';
 import { Copy } from '../../components/ui/icons';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 type Settings = {
     apiKey: string;

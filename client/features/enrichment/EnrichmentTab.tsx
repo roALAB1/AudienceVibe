@@ -1,16 +1,19 @@
 
 import React, { useState, useCallback, useContext, useMemo } from 'react';
+
+import { CreditSystemContext } from '../../App';
+import ProgressTracker, { ProgressData } from '../../components/ProgressTracker';
+import ResultsTable from '../../components/ResultsTable';
 import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
 import { UploadCloud, FileIcon, CheckCircle, XCircle, AlertTriangle } from '../../components/ui/icons';
 import { ALL_FIELDS, FIELD_PACKAGES } from '../../constants';
-import { Field, FieldCategory, ValidationResult } from '../../types';
-import { CreditSystemContext } from '../../App';
 import { enrichContactsJobBased, EnrichmentJob } from '../../services/audienceLabAPI';
-import ProgressTracker, { ProgressData } from '../../components/ProgressTracker';
-import ResultsTable from '../../components/ResultsTable';
-import ColumnMappingStep from './ColumnMappingStep';
-import { parseCSV, ParsedCSV } from '../../utils/csvParser';
+import { Field, FieldCategory, ValidationResult } from '../../types';
 import type { ColumnMapping, MatchOperator } from '../../types/columnMapping';
+import { parseCSV, ParsedCSV } from '../../utils/csvParser';
+
+import ColumnMappingStep from './ColumnMappingStep';
+
 
 type EnrichmentStatus = 'idle' | 'submitting' | 'polling' | 'downloading' | 'complete' | 'error';
 

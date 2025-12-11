@@ -1,8 +1,9 @@
 
 import React from 'react';
+import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+
 import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
 // Fix: Import 'CartesianGrid' from 'recharts'.
-import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
 const completenessData = [
     { name: 'Populated', value: 78.5 },

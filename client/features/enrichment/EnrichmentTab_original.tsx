@@ -1,11 +1,12 @@
 
 import React, { useState, useCallback, useContext, useMemo, useEffect } from 'react';
+
+import { CreditSystemContext } from '../../App';
 import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
 import { UploadCloud, FileIcon, CheckCircle, XCircle, AlertTriangle, DownloadCloud, Search, ChevronDown } from '../../components/ui/icons';
 import { ALL_FIELDS, FIELD_PACKAGES } from '../../constants';
 // Fix: Import 'Field' type to resolve type inference issues.
 import { Field, FieldCategory, ValidationResult, EnrichmentResult, EnrichmentStatus } from '../../types';
-import { CreditSystemContext } from '../../App';
 
 const EnrichmentTab = () => {
     const [file, setFile] = useState<File | null>(null);

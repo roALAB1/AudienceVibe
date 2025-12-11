@@ -3,14 +3,15 @@
  * Text area for entering search queries with character count and submit
  */
 
+import { Search } from "lucide-react";
 import { useCallback } from "react";
+
+import type { SearchMode } from "../types";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Search } from "lucide-react";
 
-import type { SearchMode } from "../types";
 
 interface QueryInputProps {
   value: string;

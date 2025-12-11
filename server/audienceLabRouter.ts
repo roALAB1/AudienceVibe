@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { publicProcedure, router } from './_core/trpc';
 
 const AUDIENCELAB_API_URL = 'https://api.audiencelab.io/enrich/v1/query';

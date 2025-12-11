@@ -1,6 +1,8 @@
 
 import React, { useContext } from 'react';
+
 import { CreditSystemContext } from '../App';
+
 import { Menu, User, Bell, Sun, Moon, CreditCard } from './ui/icons';
 
 interface HeaderProps {

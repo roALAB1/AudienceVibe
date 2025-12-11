@@ -1,11 +1,15 @@
 import "dotenv/config";
-import express from "express";
 import { createServer } from "http";
 import net from "net";
+
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
+import express from "express";
+
+
 import { appRouter } from "../routers";
+
 import { createContext } from "./context";
+import { registerOAuthRoutes } from "./oauth";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {

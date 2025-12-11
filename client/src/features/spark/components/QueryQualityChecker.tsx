@@ -3,7 +3,16 @@
  * Real-time query validation with 7 rules and scoring
  */
 
+import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import type { QueryQualityResult, SearchMode } from "../types";
+import {
+  calculateQualityScore,
+  getScoreColor,
+  getScoreDescription,
+  getStarRating,
+} from "../utils/queryValidation";
 
 import {
   Accordion,
@@ -14,15 +23,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 
-import type { QueryQualityResult, SearchMode } from "../types";
-import {
-  calculateQualityScore,
-  getScoreColor,
-  getScoreDescription,
-  getStarRating,
-} from "../utils/queryValidation";
 
 interface QueryQualityCheckerProps {
   query: string;

@@ -5,6 +5,7 @@
  */
 
 import React, { useEffect } from 'react';
+
 import type { ColumnMapping, MatchOperator, AudienceLabInputField } from '../../types/columnMapping';
 import {
   AUDIENCELAB_INPUT_FIELDS,

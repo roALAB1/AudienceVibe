@@ -3,11 +3,13 @@
  * Toggle between Intent Search and B2B Search modes
  */
 
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Brain, Building2 } from "lucide-react";
 
 import type { SearchMode } from "../types";
+
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 
 interface ModeSelectorProps {
   mode: SearchMode;

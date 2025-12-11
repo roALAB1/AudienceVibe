@@ -3,7 +3,10 @@
  * Context phrases, lens selection, and granularity controls
  */
 
+import { ChevronDown, X } from "lucide-react";
 import { useState } from "react";
+
+import type { Lens } from "../types";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,9 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { ChevronDown, X } from "lucide-react";
 
-import type { Lens } from "../types";
 
 interface AdvancedOptionsProps {
   contextPhrases: string[];

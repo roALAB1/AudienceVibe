@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
-import { Search, DownloadCloud, ChevronDown, ChevronUp } from './ui/icons';
+
 import Card, { CardHeader, CardTitle } from './ui/Card';
+import { Search, DownloadCloud, ChevronDown, ChevronUp } from './ui/icons';
 
 export interface ResultsTableProps {
     data: any[];

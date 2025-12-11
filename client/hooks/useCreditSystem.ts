@@ -1,8 +1,10 @@
 
 import { useState, useCallback } from 'react';
-import { UserCredits } from '../types';
-import useLocalStorage from './useLocalStorage';
+
 import { ALL_FIELDS } from '../constants';
+import { UserCredits } from '../types';
+
+import useLocalStorage from './useLocalStorage';
 
 const initialCredits: UserCredits = {
     balance: 10000,

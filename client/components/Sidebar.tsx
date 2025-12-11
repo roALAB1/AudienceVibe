@@ -1,6 +1,8 @@
 
 import React from 'react';
+
 import { Tab } from '../types';
+
 // Fix: Removed unused and non-existent 'Sliders' icon from import.
 import { BarChart2, CheckSquare, FileText, LayoutDashboard, Settings, UploadCloud, Sparkles } from './ui/icons';
 

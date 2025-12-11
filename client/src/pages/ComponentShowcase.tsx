@@ -1,3 +1,17 @@
+import { format } from "date-fns";
+import { zhCN } from "date-fns/locale";
+import {
+  AlertCircle,
+  CalendarIcon,
+  Check,
+  Clock,
+  Moon,
+  Sun,
+  X,
+} from "lucide-react";
+import { useState } from "react";
+import { toast as sonnerToast } from "sonner";
+
 import {
   Accordion,
   AccordionContent,
@@ -158,19 +172,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
-import { format } from "date-fns";
-import { zhCN } from "date-fns/locale";
-import {
-  AlertCircle,
-  CalendarIcon,
-  Check,
-  Clock,
-  Moon,
-  Sun,
-  X,
-} from "lucide-react";
-import { useState } from "react";
-import { toast as sonnerToast } from "sonner";
 
 export default function ComponentsShowcase() {
   const { theme, toggleTheme } = useTheme();

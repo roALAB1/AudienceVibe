@@ -5,14 +5,15 @@
 
 import { useState } from "react";
 
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 import { AdvancedOptions } from "./components/AdvancedOptions";
 import { ModeSelector } from "./components/ModeSelector";
 import { QueryInput } from "./components/QueryInput";
 import { QueryQualityChecker } from "./components/QueryQualityChecker";
 import type { Lens, SearchMode } from "./types";
+
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export const SparkSearchPage: React.FC = () => {
   const [mode, setMode] = useState<SearchMode>("intent");

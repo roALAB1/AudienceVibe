@@ -1,7 +1,8 @@
 
 import React from 'react';
-import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+
+import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
 
 const volumeTrendData = [
   { name: 'Oct 1', Success: 220, Partial: 30, Failed: 15 },

@@ -1,15 +1,16 @@
 
 import React, { useState, useMemo } from 'react';
-import { Tab } from './types';
-import Sidebar from './components/Sidebar';
+
 import Header from './components/Header';
-import OverviewTab from './features/overview/OverviewTab';
-import EnrichmentTab from './features/enrichment/EnrichmentTab';
-import QualityTab from './features/quality/QualityTab';
-import AnalyticsTab from './features/analytics/AnalyticsTab';
+import Sidebar from './components/Sidebar';
 import ActivityTab from './features/activity/ActivityTab';
+import AnalyticsTab from './features/analytics/AnalyticsTab';
+import EnrichmentTab from './features/enrichment/EnrichmentTab';
+import OverviewTab from './features/overview/OverviewTab';
+import QualityTab from './features/quality/QualityTab';
 import SettingsTab from './features/settings/SettingsTab';
 import useCreditSystem from './hooks/useCreditSystem';
+import { Tab } from './types';
 
 export const CreditSystemContext = React.createContext<ReturnType<typeof useCreditSystem> | null>(null);
 

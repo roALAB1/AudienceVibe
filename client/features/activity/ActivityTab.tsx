@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
+
 import Card, { CardHeader, CardTitle } from '../../components/ui/Card';
-import { ActivityLog } from '../../types';
 import { Search } from '../../components/ui/icons';
+import { ActivityLog } from '../../types';
 
 const mockActivityData: ActivityLog[] = [
     { id: '1', timestamp: '2024-10-29 15:45:12', user: 'john.doe@example.com', type: 'Enrichment', source: 'leads_october.csv', records: 987, matchRate: 87.1, creditsUsed: 5160, status: 'Success', duration: '1m 52s' },
