@@ -5,7 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-import { SparkSearchPage } from "../features/spark/SparkSearchPage";
+import { SparkSearchPage } from "@/features/spark/SparkSearchPage";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
