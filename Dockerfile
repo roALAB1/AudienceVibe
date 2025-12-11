@@ -29,6 +29,7 @@ COPY vitest.config.ts ./
 COPY components.json ./
 COPY vercel.json ./
 COPY build.sh ./
+COPY scripts ./scripts
 
 # Copy source code
 COPY client ./client
@@ -36,9 +37,9 @@ COPY shared ./shared
 COPY server ./server
 COPY drizzle ./drizzle
 
-# Make build script executable and run build
+# Run build with validation
 ENV NODE_ENV=production
-RUN chmod +x build.sh && ./build.sh
+RUN pnpm run build
 
 # Verify critical build outputs exist
 RUN test -f dist/public/index.html || (echo "ERROR: dist/public/index.html not found" && exit 1)
