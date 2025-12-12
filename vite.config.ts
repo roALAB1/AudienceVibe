@@ -4,8 +4,20 @@ import fs from "node:fs";
 import path from "path";
 import { defineConfig } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import { visualizer } from "rollup-plugin-visualizer";
 
-const plugins = [react(), tailwindcss(), vitePluginManusRuntime()];
+const plugins = [
+  react(),
+  tailwindcss(),
+  vitePluginManusRuntime(),
+  // Bundle analyzer - generates stats.html
+  visualizer({
+    filename: "dist/stats.html",
+    open: false,
+    gzipSize: true,
+    brotliSize: true,
+  }),
+];
 
 export default defineConfig({
   plugins,
@@ -21,6 +33,30 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor splitting
+          "react-vendor": ["react", "react-dom", "react-hook-form"],
+          "ui-vendor": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tooltip",
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-tabs",
+          ],
+          "data-vendor": [
+            "@tanstack/react-query",
+            "@trpc/client",
+            "@trpc/react-query",
+            "axios",
+          ],
+          "charts-vendor": ["recharts"],
+          "aws-vendor": ["@aws-sdk/client-s3", "@aws-sdk/s3-request-presigner"],
+        },
+      },
+    },
   },
   server: {
     port: 3000,
