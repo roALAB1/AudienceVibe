@@ -158,10 +158,16 @@ netlify deploy --prod
 
 ## 📚 Documentation
 
+### Project Documentation
 - **[MVP Delivery Report](docs/audiencelab-mvp-delivery.md)** - Complete project summary
 - **[MVP Blueprint](docs/audiencelab-mvp-blueprint.md)** - Original 9-day development plan
-- **[API Validation Results](docs/api-validation-results.md)** - Endpoint testing documentation
 - **[Vibe Coding Framework](docs/audiencelab-vibe-coding-framework.md)** - 15,000+ word guide for AI-assisted development
+
+### API Documentation
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API endpoint documentation with validated schemas
+- **[tRPC Routes](docs/TRPC_ROUTES.md)** - TypeScript usage examples for all routes
+- **[API Testing Guide](docs/API_TESTING.md)** - Testing status, results, and validation
+- **[API Validation Results](docs/api-validation-results.md)** - Initial API investigation results
 
 ---
 
