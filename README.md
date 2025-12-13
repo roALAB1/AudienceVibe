@@ -167,6 +167,7 @@ netlify deploy --prod
 - **[API Reference](docs/API_REFERENCE.md)** - Complete API endpoint documentation with validated schemas
 - **[tRPC Routes](docs/TRPC_ROUTES.md)** - TypeScript usage examples for all routes
 - **[API Testing Guide](docs/API_TESTING.md)** - Testing status, results, and validation
+- **[Follow-Up Plan](docs/FOLLOW_UP_PLAN.md)** - Action plan for next steps and improvements
 - **[API Validation Results](docs/api-validation-results.md)** - Initial API investigation results
 
 ---
