@@ -4,10 +4,12 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { audienceLabRouter } from "./audienceLabRouter";
+import { audienceLabRouter as audienceLabAPIRouter } from "./routers/audiencelab";
 
 export const appRouter = router({
   system: systemRouter,
   audienceLab: audienceLabRouter,
+  audienceLabAPI: audienceLabAPIRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
