@@ -182,8 +182,25 @@ export default function EnrichmentUploadPage() {
       toast.success('Data uploaded successfully and queued for enrichment');
       setLocation('/enrichments');
     } catch (error: any) {
-      console.error('Failed to create enrichment job:', error);
-      toast.error(error.message || 'Failed to create enrichment job');
+      console.error('❌ [API ERROR] Failed to create enrichment job:', error);
+      
+      // Extract detailed error message
+      let errorMessage = 'Failed to create enrichment job';
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      if (error.data?.message) {
+        errorMessage = error.data.message;
+      }
+      
+      // Log full error for debugging
+      console.error('Full error details:', {
+        message: error.message,
+        data: error.data,
+        stack: error.stack
+      });
+      
+      toast.error(errorMessage);
     }
   };
 

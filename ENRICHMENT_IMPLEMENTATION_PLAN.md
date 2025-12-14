@@ -154,7 +154,7 @@ const AVAILABLE_FIELDS = [
   { value: 'FIRST_NAME', label: 'First Name' },
   { value: 'LAST_NAME', label: 'Last Name' },
   { value: 'EMAIL', label: 'Email' },
-  { value: 'PHONE_NUMBER', label: 'Phone Number' },
+  { value: 'PHONE', label: 'Phone' },
   { value: 'PERSONAL_ADDRESS', label: 'Personal Address' },
   { value: 'PERSONAL_ZIP', label: 'Personal Zip' },
   { value: 'PERSONAL_STATE', label: 'Personal State' },
@@ -265,7 +265,7 @@ function detectFieldType(
     normalized.includes('cell') ||
     samples.some(s => /^\+?[\d\s\-()]+$/.test(s))
   ) {
-    return { field: 'PHONE_NUMBER', confidence: 85 };
+    return { field: 'PHONE', confidence: 85 };
   }
   
   // Company Name detection

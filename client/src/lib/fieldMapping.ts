@@ -28,7 +28,7 @@ export const AVAILABLE_FIELDS: AvailableField[] = [
   { value: 'FIRST_NAME', label: 'First Name', category: 'Personal' },
   { value: 'LAST_NAME', label: 'Last Name', category: 'Personal' },
   { value: 'EMAIL', label: 'Email', category: 'Personal' },
-  { value: 'PHONE_NUMBER', label: 'Phone Number', category: 'Personal' },
+  { value: 'PHONE', label: 'Phone', category: 'Personal' },
   { value: 'PERSONAL_ADDRESS', label: 'Personal Address', category: 'Personal' },
   { value: 'PERSONAL_ZIP', label: 'Personal Zip', category: 'Personal' },
   { value: 'PERSONAL_STATE', label: 'Personal State', category: 'Personal' },
@@ -132,7 +132,7 @@ function detectFieldType(
     normalized.includes('cell') ||
     samples.some(s => /^\+?[\d\s\-()]+$/.test(s))
   ) {
-    return { field: 'PHONE_NUMBER', confidence: 85 };
+    return { field: 'PHONE', confidence: 85 };
   }
   
   // Company Name detection

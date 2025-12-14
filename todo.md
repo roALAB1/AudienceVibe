@@ -1418,3 +1418,60 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [x] Test each fixed endpoint - All verified correct
 - [x] Verify no regressions - All working
 
+
+
+---
+
+## URGENT: Fix Enrichment Submission "Bad Request" Error
+
+### Debug Phase
+- [x] Review EnrichmentUploadPage.tsx submission logic
+- [x] Check StartEnrichmentModal data transformation
+- [x] Verify field mapping in fieldMapping.ts
+- [x] Compare request payload with API documentation
+- [x] Identify the exact field causing Bad Request - PHONE_NUMBER vs PHONE
+
+### Fix Phase
+- [x] Fix data format issue - Changed PHONE_NUMBER to PHONE
+- [ ] Test with sample CSV file - Ready for user testing
+- [ ] Verify successful submission - Ready for user testing
+- [x] Add better error messages for debugging
+
+
+
+---
+
+## COMPREHENSIVE: Field Name Audit & Verification
+
+### Phase 1: API Documentation Review
+- [x] Review Create Enrichment Job API docs for all accepted field names
+- [ ] Review Enrich Contact API docs for field names - Not needed for current scope
+- [ ] Review Create Audience API docs for field names - Future work
+- [ ] Review Create Pixel API docs for field names - Future work
+- [x] Document all correct field names from API - FIELD_NAME_REFERENCE.md created
+
+### Phase 2: Enrichment Field Audit
+- [x] Fix PHONE_NUMBER → PHONE (already done)
+- [x] Verify all other enrichment field names match API - All 16 fields verified
+- [x] Check fieldMapping.ts AVAILABLE_FIELDS array - All correct
+- [x] Check TypeScript types in shared/types - EnrichmentRecord interface verified
+- [x] Update any incorrect field names - PHONE_NUMBER fixed to PHONE
+
+### Phase 3: Audience & Pixel Field Audit
+- [ ] Review audience creation field names
+- [ ] Review pixel creation field names
+- [ ] Check all TypeScript interfaces
+- [ ] Fix any discrepancies
+
+### Phase 4: Documentation Updates
+- [x] Update API_AUDIT_RESULTS.md with field name findings - FIELD_NAME_REFERENCE.md created
+- [ ] Update COMPLETE_AUDIENCE_FILTERS_SPEC.md if needed - No changes needed
+- [x] Update any other documentation with incorrect field names - ENRICHMENT_IMPLEMENTATION_PLAN.md fixed
+- [x] Add field name reference guide - FIELD_NAME_REFERENCE.md created
+
+### Phase 5: Testing & Verification
+- [ ] Test enrichment submission with corrected fields
+- [ ] Verify no TypeScript errors
+- [ ] Create comprehensive field name reference document
+- [ ] Save checkpoint with all fixes
+
