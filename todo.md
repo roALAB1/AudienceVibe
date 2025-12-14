@@ -1739,3 +1739,18 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [x] Display audience details (filters, stats, history)
 - [x] Add navigation from table to detail page
 - [x] Test audience detail view end-to-end - SUCCESS: Detail page displays all audience information
+
+### Phase 4: Advanced Audience Management Features
+- [x] Check AudienceLab API for update/edit endpoint - NO ENDPOINT EXISTS
+- [ ] Add note in detail page that editing is not supported by API
+- [ ] Skip editing implementation (API limitation)
+- [x] Implement CSV export for audience data
+- [x] Implement JSON export for audience data
+- [x] Add export button to audiences list page
+- [x] Add export button to audience detail page
+- [x] Test export functionality end-to-end - SUCCESS: CSV export working on both pages
+- [x] Create analytics section in audience detail page
+- [x] Add key metrics cards (size, refresh count, status)
+- [x] Add refresh history timeline visualization
+- [x] Add audience health indicators with progress bars
+- [x] Test analytics visualizations end-to-end - SUCCESS: All analytics sections displaying correctly

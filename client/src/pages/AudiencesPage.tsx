@@ -3,7 +3,7 @@ import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Plus, RefreshCw, ArrowUpDown, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
+import { Loader2, Plus, RefreshCw, ArrowUpDown, ArrowUp, ArrowDown, Trash2, Download } from 'lucide-react';
 import { Link } from 'wouter';
 import { toast } from 'sonner';
 import CreateAudienceDialog from '@/components/audiences/CreateAudienceDialog';
@@ -24,6 +24,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type SortField = 'name' | 'creation_date' | 'last_refreshed' | 'audience_size' | 'refresh_count' | 'next_refresh';
 type SortDirection = 'asc' | 'desc' | null;
@@ -39,6 +45,61 @@ export default function AudiencesPage() {
   const [audienceToDelete, setAudienceToDelete] = useState<{ id: string; name: string } | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
+  // Export handlers
+  const handleExportCSV = () => {
+    const audiences = data?.data || [];
+    if (audiences.length === 0) {
+      toast.error('No audiences to export');
+      return;
+    }
+
+    // Create CSV content
+    const headers = ['ID', 'Name', 'Status', 'Audience Size', 'Refresh Count', 'Next Scheduled Refresh', 'Scheduled Refresh', 'Refresh Interval', 'Webhook URL'];
+    const rows = audiences.map((aud: any) => [
+      aud.id,
+      aud.name,
+      'Completed', // Status is always completed in the current data
+      aud.audience_size?.toString() || '0',
+      aud.refresh_count?.toString() || '0',
+      aud.next_scheduled_refresh || '',
+      aud.scheduled_refresh ? 'Yes' : 'No',
+      aud.refresh_interval || '',
+      aud.webhook_url || ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `audiences_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    toast.success(`Exported ${audiences.length} audiences to CSV`);
+  };
+
+  const handleExportJSON = () => {
+    const audiences = data?.data || [];
+    if (audiences.length === 0) {
+      toast.error('No audiences to export');
+      return;
+    }
+
+    // Create JSON content
+    const jsonContent = JSON.stringify(audiences, null, 2);
+
+    // Download JSON
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `audiences_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    toast.success(`Exported ${audiences.length} audiences to JSON`);
+  };
 
   // Fetch audiences
   const { data, isLoading, error, refetch } = trpc.audienceLabAPI.audiences.list.useQuery({
@@ -279,6 +340,22 @@ export default function AudiencesPage() {
               <RefreshCw className="w-4 h-4" />
               Reload
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleExportCSV}>
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportJSON}>
+                  Export as JSON
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button onClick={() => setCreateDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
               <Plus className="w-4 h-4 mr-1" />
               Create
