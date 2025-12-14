@@ -177,8 +177,17 @@ export interface EnrichmentResponse {
   [key: string]: any;
 }
 
+/**
+ * Validated from actual API response (December 14, 2025)
+ * GET /enrichments returns this structure
+ */
 export interface EnrichmentJob {
-  [key: string]: any;
+  id: string;                    // Unique enrichment job ID
+  name: string;                  // Job name
+  status: string;                // "COMPLETED", "NO_DATA", "FAILED", "PROCESSING"
+  csv_url: string;               // URL to download enriched CSV results
+  total: number;                 // Number of records in the enrichment
+  created_at: string;            // ISO 8601 datetime (e.g., "2025-12-14T05:12:19.445473+00:00")
 }
 
 /**
@@ -219,11 +228,11 @@ export interface EnrichmentRecord {
 }
 
 /**
- * ⚠️ NOT YET VALIDATED
- * Placeholder for GET /enrichment/jobs response
+ * Validated from real AudienceLab dashboard (December 14, 2025)
+ * Response structure from GET /enrichments
  */
 export interface EnrichmentJobsListResponse {
-  data: any[];
+  data: EnrichmentJob[];
   total: number;
 }
 

@@ -16,7 +16,8 @@ import { Loader2, Upload } from "lucide-react";
  * - No stats, no filters, no modals, no actions
  */
 export default function EnrichmentsPage() {
-  const { data: enrichments, isLoading } = trpc.audienceLabAPI.enrichment.getJobs.useQuery({});
+  const { data: enrichmentsResponse, isLoading } = trpc.audienceLabAPI.enrichment.getJobs.useQuery({});
+  const enrichments = enrichmentsResponse?.data || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -40,7 +41,7 @@ export default function EnrichmentsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">
-                  {isLoading ? "..." : enrichments?.length || 0} Enrichment Lists
+                  {isLoading ? "..." : enrichments.length} Enrichment Lists
                 </span>
                 <Input
                   placeholder="Search by name..."
@@ -62,7 +63,7 @@ export default function EnrichmentsPage() {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
               </div>
-            ) : enrichments && enrichments.length > 0 ? (
+            ) : enrichments.length > 0 ? (
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
@@ -85,20 +86,22 @@ export default function EnrichmentsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Badge
-                          variant={enrichment.status === "completed" ? "default" : "secondary"}
+                          variant={enrichment.status === "Completed" ? "default" : "secondary"}
                         >
-                          {enrichment.status === "completed" ? "Completed" : enrichment.status === "failed" ? "no data" : "Processing"}
+                          {enrichment.status || "Unknown"}
                         </Badge>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(enrichment.createdAt).toLocaleString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
+                        {enrichment.created_at
+                          ? new Date(enrichment.created_at).toLocaleString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                          : "N/A"}
                       </td>
                     </tr>
                   ))}

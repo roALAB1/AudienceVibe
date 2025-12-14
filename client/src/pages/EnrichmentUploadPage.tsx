@@ -137,7 +137,7 @@ export default function EnrichmentUploadPage() {
       // Transform CSV data + mappings to API format
       const mappedColumns = fieldMappings
         .filter(m => m.mappedField && m.mappedField !== '' && m.mappedField !== 'DO_NOT_IMPORT')
-        .map(m => m.mappedField); // Keep UPPERCASE for columns
+        .map(m => m.mappedField as string); // Keep UPPERCASE for columns
 
       const records = csvData.rows.map(row => {
         const record: any = {};
@@ -250,24 +250,35 @@ export default function EnrichmentUploadPage() {
                 <ArrowLeftRight className="w-5 h-5 text-gray-700" />
                 <h2 className="text-lg font-semibold text-gray-900">Map CSV Columns to Fields</h2>
               </div>
-              <Button
-                onClick={() => {
-                  setFieldMappings(prev =>
-                    prev.map(mapping => 
-                      mapping.mappedField !== 'DO_NOT_IMPORT'
-                        ? { ...mapping, mappedField: 'DO_NOT_IMPORT', isAutoMapped: false }
-                        : mapping
-                    )
-                  );
-                  const changedCount = fieldMappings.filter(m => m.mappedField !== 'DO_NOT_IMPORT').length;
-                  toast.success(`${changedCount} field(s) set to "Do Not Import"`);
-                }}
-                variant="outline"
-                size="sm"
-                className="text-red-600 border-red-300 hover:bg-red-50"
-              >
-                DO NOT IMPORT REST
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    setFieldMappings(prev =>
+                      prev.map(mapping => ({ ...mapping, mappedField: 'DO_NOT_IMPORT', isAutoMapped: false }))
+                    );
+                    toast.success('All fields set to "Do Not Import"');
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 border-red-300 hover:bg-red-50"
+                >
+                  DO NOT IMPORT ALL
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (!csvData) return;
+                    const autoMapped = detectFields(csvData.columns, csvData.rows);
+                    setFieldMappings(autoMapped);
+                    const mappedCount = autoMapped.filter(m => m.isAutoMapped).length;
+                    toast.success(`${mappedCount} field(s) auto-mapped`);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 border-blue-300 hover:bg-blue-50"
+                >
+                  AUTO MAP ALL
+                </Button>
+              </div>
             </div>
 
             {/* Column Headers */}

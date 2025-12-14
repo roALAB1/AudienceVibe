@@ -1062,3 +1062,40 @@ See SIMPLIFIED_ENRICHMENTS_TEST.md and AUDIENCELAB_UPLOAD_RESEARCH.md for detail
 - [ ] Fix enrichment submission flow (needs user testing)
 - [x] Add proper success/error notifications (already in handleModalSubmit)
 - [ ] Verify enrichment job is created in database (needs user testing)
+
+
+---
+
+## Replace Button and Fix Enrichment Issues (CRITICAL)
+
+### Button Replacement
+- [x] Replace "DO NOT IMPORT REST" with two buttons
+- [x] Add "DO NOT IMPORT ALL" button (sets all fields to DO_NOT_IMPORT)
+- [x] Add "AUTO MAP ALL" button (reverts to automatic field detection)
+- [x] Style buttons appropriately (red for DO NOT IMPORT ALL, blue/green for AUTO MAP ALL)
+
+### Enrichment Submission Issues
+- [x] Debug why enrichment submission doesn't work (added console logging)
+- [x] Check API endpoint and request payload (verified correct)
+- [x] Verify authentication and authorization (API key working)
+- [x] Test with console logging (added to modal)
+- [ ] Verify enrichment job is created in database (needs user testing)
+
+### Enrichments List Issues
+- [x] Fix enrichments list not showing existing jobs (fixed enrichments.data mapping)
+- [x] Check API call to fetch enrichments (working correctly)
+- [x] Verify data is being returned from server (14 enrichments showing)
+- [x] Check if there's a filtering or authentication issue (no issues)
+- [x] Test with enrichments created in another tab (all enrichments visible)
+
+
+---
+
+## Fix Enrichment Job Types and Display (CRITICAL)
+
+- [x] Update EnrichmentJob interface with correct fields from real API (id, name, status, csv_url, total, created_at)
+- [x] Update EnrichmentJobsListResponse to use proper EnrichmentJob type
+- [x] Fix EnrichmentsPage to use correct status field name (status)
+- [x] Fix EnrichmentsPage to use correct date field name (created_at)
+- [x] Test that enrichments display with correct status (COMPLETED, NO_DATA, FAILED)
+- [x] Test that enrichments display with correct formatted dates (Dec 14, 2025, 5:12 AM)
