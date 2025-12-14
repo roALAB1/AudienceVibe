@@ -415,3 +415,13 @@ Fixed: Rewrote CSV parser to use character-by-character parsing with quote state
 - [x] Add logo and branding to sidebar
 
 All navigation features working! See NAVIGATION_TEST.md for test results.
+
+
+---
+
+## Fix Nested Anchor Tag Error
+
+- [x] Fix DashboardLayout component - remove nested <a> tags inside <Link>
+- [x] Test in browser to verify error is resolved
+
+✅ Fixed! Changed <a> to <div> inside <Link> components. No console errors.
