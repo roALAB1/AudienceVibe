@@ -5,6 +5,47 @@ All notable changes to the AudienceLab Enrichment Dashboard will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.0] - 2025-12-14
+
+### Added - Advanced Audience Management Features ✅
+
+#### Audience Management Enhancements
+- **Create Audience** - Fixed empty filters bug (now requires `filters: { city: [] }` minimum)
+- **Delete Audience** - Individual delete with confirmation dialog
+- **Bulk Actions** - Multi-select audiences with checkboxes and bulk delete confirmation
+- **Export Functionality** - CSV/JSON export on both list and detail pages
+- **Detail View** - Comprehensive audience information page with analytics
+- **Search & Pagination** - Real-time search by name, configurable rows per page (10/25/50/100)
+- **Reload Button** - Refetch audience list from API
+
+#### Analytics Dashboard
+- **Key Metrics Cards** - Total Size, Refresh Count, Status with gradient backgrounds
+- **Refresh Timeline** - Visual representation of refresh history
+- **Audience Health Indicators** - Data Availability, Refresh Activity, Automation Status with progress bars
+
+#### Bug Fixes
+- **CreateAudienceDialog** - Fixed 500 error when passing empty `filters: {}` object
+- **TypeScript Types** - Updated Audience interface with missing fields (status, audience_size, etc.)
+- **Export** - Fixed CSV/JSON download functionality
+
+#### API Integrations
+- **GET /audiences/:id** - Added getById endpoint for detail view
+- **Bulk Delete** - Implemented parallel delete operations with error handling
+
+### Changed
+- **AudiencesPage** - Added bulk selection toolbar, export dropdown, clickable audience names
+- **AudienceDetailPage** - New page with Overview, Refresh Settings, Analytics, and Metadata sections
+- **README.md** - Updated with comprehensive audience management feature list
+- **PROJECT_SUMMARY.md** - Updated with latest features and API limitations
+
+### Technical Details
+- **TypeScript Compilation:** 0 errors
+- **Production Build:** Success (10.08s)
+- **All Features Tested:** Browser validation complete
+- **Documentation:** Updated PROJECT_SUMMARY.md and README.md
+
+---
+
 ## [3.2.0] - 2025-12-14
 
 ### Added - API Filter Schema Validation ✅
