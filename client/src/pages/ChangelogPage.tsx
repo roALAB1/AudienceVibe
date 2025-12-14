@@ -13,6 +13,41 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: "v3.1.0",
+    date: "2025-12-14",
+    checkpoint: "6a605328",
+    sections: [
+      {
+        type: "added",
+        items: [
+          "API Error Logging System: Real-time monitoring of all AudienceLab API calls",
+          "API Logs Dashboard: Admin interface at /api-logs with stats and filtering",
+          "Stats Cards: Total Logs, Errors, Warnings, Average Duration",
+          "Correlation IDs: Track entire request chains across multiple API calls",
+          "Log Levels: INFO, WARN, ERROR, DEBUG with color-coded badges",
+          "Filterable Table: Search by endpoint, filter by log level",
+          "Pagination: Handle large log datasets efficiently",
+          "Background Service: Automatic log flushing every 30 seconds",
+          "Database Table: api_error_logs with 14 columns for persistent storage",
+          "Performance Metrics: Response time tracking and error rate calculation",
+          "Stack Traces: Full error details with correlation IDs",
+          "Body Truncation: Automatic truncation for large payloads (>10KB)",
+          "Navigation: Added 'API Logs' link to sidebar with Activity icon",
+          "Testing: 13/13 tests passing with full coverage",
+          "Documentation: Complete API_LOGGING.md guide (2000+ words)",
+        ],
+      },
+      {
+        type: "changed",
+        items: [
+          "AudienceLab Client: All API calls now automatically logged",
+          "Server Startup: Integrated API log service with graceful shutdown",
+          "README: Added API Error Logging feature section",
+        ],
+      },
+    ],
+  },
+  {
     version: "v3.0.0",
     date: "2025-12-14",
     checkpoint: "44204205",
