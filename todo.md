@@ -1770,3 +1770,15 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [x] Create GitHub release with tag - v3.3.0 CREATED
 - [x] Update changelog page in the app - ChangelogPage.tsx updated
 - [x] Verify changelog displays correctly in browser - VERIFIED
+
+
+## Audience Detail Page - Real Data Display
+
+- [x] Fix audience detail page to show real data instead of zeros and "Not set"
+- [x] Investigate why API returns {status: "no data"} for GET /audiences/:id
+- [x] Update page to use correct API endpoint or data source
+- [x] Update Audience type to remove non-existent fields (audience_size, created_at, last_refreshed, refresh_count)
+- [x] Add clear notice about API limitations
+- [x] Test with real audience data
+
+**FIXED (December 14, 2025):** The API's GET /audiences/:id endpoint only returns {status: "no data"}. Changed to fetch from the list endpoint and find the matching audience. Updated Audience type to only include the 6 fields the API actually returns (id, name, next_scheduled_refresh, refresh_interval, scheduled_refresh, webhook_url). Added clear notice about API limitations. All real data now displaying correctly.

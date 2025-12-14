@@ -14,7 +14,11 @@
 
 /**
  * Validated from GET /audiences response
- * Test result: 2 audiences fetched successfully
+ * Last tested: December 14, 2025
+ * 
+ * IMPORTANT: The API ONLY returns these 6 fields.
+ * Fields like audience_size, created_at, last_refreshed, and refresh_count
+ * do NOT exist in the API response.
  */
 export interface Audience {
   id: string;
@@ -23,11 +27,6 @@ export interface Audience {
   refresh_interval: string | null;  // API returns string, not number
   scheduled_refresh: boolean;
   webhook_url: string | null;
-  // Additional fields from API responses
-  audience_size?: number;
-  created_at?: string;
-  last_refreshed?: string | null;
-  refresh_count?: number;
 }
 
 /**

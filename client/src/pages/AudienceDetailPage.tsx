@@ -2,9 +2,9 @@ import { useParams, useLocation, Link } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, RefreshCw, Trash2, Download } from 'lucide-react';
+import { Loader2, ArrowLeft, RefreshCw, Trash2, Download, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,11 +27,18 @@ export default function AudienceDetailPage() {
   const [, setLocation] = useLocation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  // Fetch audience details
-  const { data: audience, isLoading, error, refetch } = trpc.audienceLabAPI.audiences.getById.useQuery(
-    { id: id! },
+  // Fetch all audiences (since GET /audiences/:id only returns {status: "no data"})
+  // We need to get the full list and find the matching audience
+  const { data: audiencesList, isLoading, error, refetch } = trpc.audienceLabAPI.audiences.list.useQuery(
+    { page: 1, pageSize: 100 },
     { enabled: !!id }
-  ) as { data: any; isLoading: boolean; error: any; refetch: () => void };
+  );
+
+  // Find the specific audience from the list
+  const audience = useMemo(() => {
+    if (!audiencesList?.data) return null;
+    return audiencesList.data.find(a => a.id === id);
+  }, [audiencesList, id]);
 
   // Get utils for invalidation
   const utils = trpc.useUtils();
@@ -73,14 +80,9 @@ export default function AudienceDetailPage() {
     const rows = [
       ['ID', audience.id],
       ['Name', audience.name],
-      ['Status', 'Completed'],
-      ['Audience Size', audience.audience_size?.toString() || '0'],
-      ['Created At', audience.created_at || 'Not set'],
-      ['Last Refreshed', audience.last_refreshed || 'Not set'],
-      ['Refresh Count', audience.refresh_count?.toString() || '0'],
-      ['Next Scheduled Refresh', audience.next_scheduled_refresh || 'Not set'],
       ['Scheduled Refresh', audience.scheduled_refresh ? 'Enabled' : 'Disabled'],
       ['Refresh Interval', audience.refresh_interval || 'Not set'],
+      ['Next Scheduled Refresh', audience.next_scheduled_refresh || 'Not set'],
       ['Webhook URL', audience.webhook_url || 'Not set']
     ];
 
@@ -116,17 +118,22 @@ export default function AudienceDetailPage() {
     toast.success('Audience exported to JSON');
   };
 
-  const formatDate = (dateString: string | null) => {
+  const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Not set';
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Not set';
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return 'Not set';
+    }
   };
 
   if (isLoading) {
@@ -204,44 +211,32 @@ export default function AudienceDetailPage() {
           </div>
         </div>
 
+        {/* API Limitation Notice */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div>
+              <h3 className="text-sm font-semibold text-blue-900 mb-1">Limited Data Available</h3>
+              <p className="text-sm text-blue-800">
+                The AudienceLab API currently does not provide audience size, creation date, last refreshed date, or refresh count information. 
+                Only refresh settings and metadata are available.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Overview Card */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Overview</h2>
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Status</p>
-              {audience.audience_size === 0 ? (
-                <Badge variant="destructive" className="bg-red-100 text-red-800 hover:bg-red-100">
-                  No Data
-                </Badge>
-              ) : (
-                <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                  Completed
-                </Badge>
-              )}
+              <p className="text-sm text-gray-500 mb-1">Audience Name</p>
+              <p className="text-lg font-semibold text-gray-900">{audience.name}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">Audience Size</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {audience.audience_size?.toLocaleString() || '0'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Created At</p>
-              <p className="text-lg font-semibold text-gray-900">{formatDate(audience.created_at || null)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Last Refreshed</p>
-              <p className="text-lg font-semibold text-gray-900">{formatDate(audience.last_refreshed || null)}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Refresh Count</p>
-              <p className="text-lg font-semibold text-gray-900">{audience.refresh_count || '0'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Next Scheduled Refresh</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {formatDate(audience.next_scheduled_refresh)}
+              <p className="text-sm text-gray-500 mb-1">Audience ID</p>
+              <p className="text-sm font-mono text-gray-900 bg-gray-50 px-2 py-1 rounded">
+                {audience.id}
               </p>
             </div>
           </div>
@@ -253,14 +248,28 @@ export default function AudienceDetailPage() {
           <div className="grid grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-gray-500 mb-1">Scheduled Refresh</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {audience.scheduled_refresh ? 'Enabled' : 'Disabled'}
-              </p>
+              <div className="flex items-center gap-2">
+                {audience.scheduled_refresh ? (
+                  <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                    Enabled
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="bg-gray-100 text-gray-800 hover:bg-gray-100">
+                    Disabled
+                  </Badge>
+                )}
+              </div>
             </div>
             <div>
               <p className="text-sm text-gray-500 mb-1">Refresh Interval</p>
               <p className="text-lg font-semibold text-gray-900">
                 {audience.refresh_interval || 'Not set'}
+              </p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-sm text-gray-500 mb-1">Next Scheduled Refresh</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {formatDate(audience.next_scheduled_refresh)}
               </p>
             </div>
             <div className="col-span-2">
@@ -279,111 +288,63 @@ export default function AudienceDetailPage() {
           {/* Key Metrics */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-              <p className="text-sm text-blue-600 font-medium mb-1">Total Size</p>
-              <p className="text-3xl font-bold text-blue-900">{audience.audience_size?.toLocaleString() || '0'}</p>
-              <p className="text-xs text-blue-600 mt-1">members</p>
+              <p className="text-sm text-blue-600 font-medium mb-1">Audience Size</p>
+              <p className="text-2xl font-bold text-blue-900">Not Available</p>
+              <p className="text-xs text-blue-600 mt-1">API limitation</p>
             </div>
             <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
               <p className="text-sm text-green-600 font-medium mb-1">Refresh Count</p>
-              <p className="text-3xl font-bold text-green-900">{audience.refresh_count || '0'}</p>
-              <p className="text-xs text-green-600 mt-1">total refreshes</p>
+              <p className="text-2xl font-bold text-green-900">Not Available</p>
+              <p className="text-xs text-green-600 mt-1">API limitation</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
               <p className="text-sm text-purple-600 font-medium mb-1">Status</p>
-              <p className="text-2xl font-bold text-purple-900">
-                {audience.scheduled_refresh ? 'Active' : 'Inactive'}
-              </p>
-              <p className="text-xs text-purple-600 mt-1">
-                {audience.scheduled_refresh ? 'auto-refresh enabled' : 'manual only'}
-              </p>
+              <p className="text-2xl font-bold text-purple-900">{audience.scheduled_refresh ? 'Active' : 'Inactive'}</p>
+              <p className="text-xs text-purple-600 mt-1">{audience.scheduled_refresh ? 'auto-refresh' : 'manual only'}</p>
             </div>
           </div>
 
           {/* Refresh Timeline */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Refresh Timeline</h3>
-            <div className="space-y-3">
-              {audience.created_at && (
-                <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full mt-1"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Created</p>
-                    <p className="text-xs text-gray-500">{formatDate(audience.created_at)}</p>
-                  </div>
-                </div>
-              )}
-              {audience.last_refreshed && (
-                <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full mt-1"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Last Refreshed</p>
-                    <p className="text-xs text-gray-500">{formatDate(audience.last_refreshed)}</p>
-                  </div>
-                </div>
-              )}
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Refresh Timeline</h3>
+            <div className="space-y-2">
               {audience.next_scheduled_refresh && (
-                <div className="flex items-start gap-3">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full mt-1"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Next Scheduled Refresh</p>
-                    <p className="text-xs text-gray-500">{formatDate(audience.next_scheduled_refresh)}</p>
-                  </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                  <span className="text-gray-600">Next Refresh:</span>
+                  <span className="font-medium text-gray-900">{formatDate(audience.next_scheduled_refresh)}</span>
                 </div>
               )}
-              {!audience.created_at && !audience.last_refreshed && !audience.next_scheduled_refresh && (
-                <p className="text-sm text-gray-500 italic">No refresh history available</p>
+              {!audience.next_scheduled_refresh && (
+                <p className="text-sm text-gray-500 italic">No scheduled refreshes configured</p>
               )}
             </div>
           </div>
 
-          {/* Audience Health Indicator */}
-          <div className="border-t pt-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Audience Health</h3>
+          {/* Audience Health */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Audience Health</h3>
             <div className="space-y-3">
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm text-gray-600">Data Availability</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {audience.audience_size > 0 ? '100%' : '0%'}
-                  </span>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-600">Data Availability</span>
+                  <span className="font-medium text-gray-900">Unknown</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full ${
-                      audience.audience_size > 0 ? 'bg-green-500' : 'bg-red-500'
-                    }`}
-                    style={{ width: audience.audience_size > 0 ? '100%' : '0%' }}
-                  ></div>
+                  <div className="h-2 rounded-full bg-gray-400" style={{ width: '0%' }}></div>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">API does not provide audience size information</p>
               </div>
               <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm text-gray-600">Refresh Activity</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {audience.refresh_count > 0 ? 'Active' : 'None'}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full ${
-                      audience.refresh_count > 0 ? 'bg-blue-500' : 'bg-gray-400'
-                    }`}
-                    style={{ width: audience.refresh_count > 0 ? '75%' : '0%' }}
-                  ></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm text-gray-600">Automation Status</span>
-                  <span className="text-sm font-medium text-gray-900">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-600">Automation Status</span>
+                  <span className="font-medium text-gray-900">
                     {audience.scheduled_refresh ? 'Enabled' : 'Disabled'}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
-                    className={`h-2 rounded-full ${
-                      audience.scheduled_refresh ? 'bg-purple-500' : 'bg-gray-400'
-                    }`}
+                    className={`h-2 rounded-full ${audience.scheduled_refresh ? 'bg-purple-500' : 'bg-gray-400'}`}
                     style={{ width: audience.scheduled_refresh ? '100%' : '0%' }}
                   ></div>
                 </div>
@@ -398,35 +359,41 @@ export default function AudienceDetailPage() {
           <div className="space-y-3">
             <div>
               <p className="text-sm text-gray-500 mb-1">Audience ID</p>
-              <p className="text-sm font-mono text-gray-900 bg-gray-50 p-2 rounded">{audience.id}</p>
+              <p className="text-sm font-mono text-gray-900 bg-gray-50 p-2 rounded border border-gray-200">
+                {audience.id}
+              </p>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Audience</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <strong>{audience.name}</strong>? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-red-600 hover:bg-red-700"
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Audience</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{audience.name}"? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleteMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }
