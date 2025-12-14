@@ -260,7 +260,7 @@ Fixed: Rewrote CSV parser to use character-by-character parsing with quote state
 ### Critical Endpoint Identification
 - [ ] Identify most critical untested endpoint for next feature
 - [ ] Document required input schema for critical endpoint
-- [ ] Create implementation plan for critical endpoint
+- [x] Create implementation plan for critical endpoint
 
 ### Test Coverage Improvement
 - [ ] Identify three areas lacking test coverage
@@ -1359,29 +1359,62 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [ ] Test end-to-end: upload CSV → select fields → submit → view results
 
 ### Phase 2: GitHub Updates
-- [ ] Update README.md with comprehensive project overview
-- [ ] Update CHANGELOG.md with all recent features
-- [ ] Create proper commit messages for all changes
-- [ ] Push all code changes to GitHub
-- [ ] Verify GitHub repository is up to date
+- [x] Update README.md with comprehensive project overview
+- [x] Update CHANGELOG.md with all recent features
+- [x] Create proper commit messages for all changes
+- [x] Push all code changes to GitHub
+- [x] Verify GitHub repository is up to date
 
 ### Phase 3: GitHub Release & Tags
-- [ ] Create version tag (e.g., v1.0.0)
-- [ ] Create GitHub release with release notes
-- [ ] Add release assets if needed
-- [ ] Document breaking changes (if any)
+- [x] Create version tag (v3.0.0)
+- [x] Create GitHub release with release notes
+- [x] Add release assets if needed (N/A)
+- [x] Document breaking changes (CreateAudienceDialog interface)
 
 ### Phase 4: In-App Changelog
-- [ ] Update ChangelogPage.tsx with recent features
-- [ ] Add Vibe Code prototype entry
-- [ ] Add enrichment fixes entry
-- [ ] Add any other recent updates
-- [ ] Test changelog page displays correctly
+- [x] Update ChangelogPage.tsx with recent features
+- [x] Add Vibe Code prototype entry
+- [ ] Add enrichment fixes entry (pending bug investigation)
+- [x] Add any other recent updates
+- [x] Test changelog page displays correctly
 
 ### Phase 5: Vibe Dashboard Roadmap
-- [ ] Document complete roadmap for finishing audience creation
-- [ ] Prioritize remaining features
-- [ ] Estimate time for each phase
-- [ ] Identify MVP vs nice-to-have features
-- [ ] Create implementation plan
+- [x] Document complete roadmap for finishing audience creation
+- [x] Prioritize remaining features
+- [x] Estimate time for each phase
+- [x] Identify MVP vs nice-to-have features
+- [x] Create implementation plan
+
+
+
+---
+
+## CRITICAL: API Usage Audit & Fixes
+
+### Phase 1: Audit tRPC Router Usage
+- [x] Find all `trpc.audienceLab.*` calls (old router) - None found
+- [x] Find all `trpc.audienceLabAPI.*` calls (new router) - All 5 files correct
+- [x] Verify which router each feature should use - All use audienceLabAPI
+- [x] Document correct router paths for each feature
+- [x] Fix any incorrect router references - None needed
+
+### Phase 2: Audit API Endpoint Paths
+- [x] Verify enrichment endpoints match AudienceLab API - Correct
+- [x] Verify audience endpoints match AudienceLab API - Correct
+- [x] Verify pixel endpoints match AudienceLab API - Correct
+- [x] Check request payload formats - All correct
+- [x] Check response handling - All correct
+
+### Phase 3: Audit Environment Variables
+- [x] Verify AUDIENCELAB_API_KEY usage in server - Correct
+- [x] Verify VITE_AUDIENCELAB_API_KEY usage in client - Not used (correct)
+- [x] Check for any hardcoded API keys - None found
+- [x] Verify API base URL configuration - Correct
+
+### Phase 4: Fix Identified Issues
+- [x] Update incorrect tRPC calls - None needed
+- [x] Fix incorrect API endpoint paths - None needed
+- [x] Update type definitions if needed - None needed
+- [x] Test each fixed endpoint - All verified correct
+- [x] Verify no regressions - All working
 
