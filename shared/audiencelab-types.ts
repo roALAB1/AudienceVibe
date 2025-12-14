@@ -20,18 +20,22 @@ export interface Audience {
   id: string;
   name: string;
   next_scheduled_refresh: string | null;
-  refresh_interval: number | null;
+  refresh_interval: string | null;  // API returns string, not number
   scheduled_refresh: boolean;
   webhook_url: string | null;
 }
 
 /**
- * Validated from GET /audiences response
- * Response structure: { data: Audience[], total: number }
+ * Validated from GET /audiences API documentation
+ * https://audiencelab.mintlify.app/api-reference/audience/get-audiences
+ * Response structure includes pagination metadata
  */
 export interface AudiencesListResponse {
-  data: Audience[];
-  total: number;
+  total_records: number;  // Total number of audiences
+  page_size: number;      // Number of items per page
+  page: number;           // Current page number
+  total_pages: number;    // Total number of pages
+  data: Audience[];       // Array of audience objects
 }
 
 /**
@@ -58,11 +62,27 @@ export interface CreateAudienceRequest {
 
 /**
  * Response from POST /audiences
+ * https://audiencelab.mintlify.app/api-reference/audience/create-audience
+ * API returns only the audienceId
  */
 export interface CreateAudienceResponse {
-  id: string;
-  name: string;
-  created_at: string;
+  audienceId: string;  // UUID of the created audience
+}
+
+/**
+ * Request format for POST /audiences/custom
+ * https://audiencelab.mintlify.app/api-reference/audience/create-custom-audience
+ */
+export interface CreateCustomAudienceRequest {
+  topic: string;        // REQUIRED - Custom interest topic
+  description: string;  // REQUIRED - Description of users interested in this topic
+}
+
+/**
+ * Response from POST /audiences/custom
+ */
+export interface CreateCustomAudienceResponse {
+  status: string;  // Processing status (e.g., "processing")
 }
 
 // ============================================================================
@@ -83,12 +103,16 @@ export interface Pixel {
 }
 
 /**
- * Validated from GET /pixels response
- * Response structure: { data: Pixel[], total: number }
+ * Validated from GET /pixels API documentation
+ * https://audiencelab.mintlify.app/api-reference/pixel/get-pixels
+ * Response structure includes pagination metadata
  */
 export interface PixelsListResponse {
-  data: Pixel[];
-  total: number;
+  total_records: number;  // Total number of pixels
+  page_size: number;      // Number of items per page
+  page: number;           // Current page number
+  total_pages: number;    // Total number of pages
+  data: Pixel[];          // Array of pixel objects
 }
 
 /**
@@ -228,12 +252,16 @@ export interface EnrichmentRecord {
 }
 
 /**
- * Validated from real AudienceLab dashboard (December 14, 2025)
- * Response structure from GET /enrichments
+ * Validated from GET /enrichments API documentation
+ * https://audiencelab.mintlify.app/api-reference/enrichment/get-enrichments
+ * Response structure includes pagination metadata
  */
 export interface EnrichmentJobsListResponse {
-  data: EnrichmentJob[];
-  total: number;
+  total_records: number;  // Total number of enrichment jobs
+  page_size: number;      // Number of items per page
+  page: number;           // Current page number
+  total_pages: number;    // Total number of pages
+  data: EnrichmentJob[];  // Array of enrichment job objects
 }
 
 // ============================================================================

@@ -12,6 +12,8 @@ import type {
   Audience,
   AudiencesListResponse,
   CreateAudienceRequest,
+  CreateCustomAudienceRequest,
+  CreateCustomAudienceResponse,
   AudienceAttribute,
   EnrichmentRequest,
   EnrichmentResponse,
@@ -165,8 +167,9 @@ export class AudienceLabClient {
 
   /**
    * List all audiences with pagination
+   * Default pageSize is 100 to match API default
    */
-  async getAudiences(page = 1, pageSize = 50): Promise<AudiencesListResponse> {
+  async getAudiences(page = 1, pageSize = 100): Promise<AudiencesListResponse> {
     return this.request<AudiencesListResponse>('GET', '/audiences', {
       params: { page, page_size: pageSize },
     });
@@ -183,6 +186,17 @@ export class AudienceLabClient {
    */
   async createAudience(data: CreateAudienceRequest): Promise<{ audienceId: string }> {
     return this.request<{ audienceId: string }>('POST', '/audiences', { body: data });
+  }
+
+  /**
+   * Create a custom audience based on topic and description
+   * https://audiencelab.mintlify.app/api-reference/audience/create-custom-audience
+   * 
+   * @param data - Custom audience request with topic and description
+   * @returns Object with status ("processing")
+   */
+  async createCustomAudience(data: CreateCustomAudienceRequest): Promise<CreateCustomAudienceResponse> {
+    return this.request<CreateCustomAudienceResponse>('POST', '/audiences/custom', { body: data });
   }
 
   /**
@@ -212,9 +226,10 @@ export class AudienceLabClient {
 
   /**
    * Enrich a single contact
+   * https://audiencelab.mintlify.app/api-reference/enrichment/enrich-contact
    */
   async enrichContact(data: EnrichmentRequest): Promise<EnrichmentResponse> {
-    return this.request<EnrichmentResponse>('POST', '/enrich/contact', { body: data });
+    return this.request<EnrichmentResponse>('POST', '/enrich', { body: data });
   }
 
   /**
