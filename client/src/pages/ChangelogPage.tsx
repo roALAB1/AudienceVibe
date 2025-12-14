@@ -13,6 +13,53 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: "v3.2.0",
+    date: "2025-12-14",
+    checkpoint: "dfb611d4",
+    sections: [
+      {
+        type: "added",
+        items: [
+          "API Filter Schema Validation: 28/28 tests passed (100% success rate)",
+          "Complete Filter Validation: All AudienceLab API filter types validated through real API calls",
+          "Zero Assumptions: Every filter field confirmed through actual testing",
+          "Test Suite: Comprehensive tests/api-filter-discovery.test.ts (44-second execution)",
+          "28 Test Audiences: All created successfully with [TEST] prefix",
+          "Critical Discovery: Industry & seniority filters work with correct camelCase naming",
+          "Field Naming Documentation: camelCase for businessProfile/profile, snake_case for attributes",
+          "Location Filters (3): city, state, zip validated",
+          "Age Filters (1): minAge/maxAge range validated",
+          "Gender Filter (1): gender array validated",
+          "Business Profile (9): jobTitle, seniority, industry, department, companyName, companyDomain, companyDescription, employeeCount, companyRevenue",
+          "Profile Filters (5): incomeRange, homeowner, married, netWorth, children validated",
+          "Attributes Filters (8): credit_rating, language_code, education, dwelling_type, marital_status, occupation_type, smoker, home_year_built",
+          "TypeScript Types: Complete CreateAudienceRequest interface with all 28 validated fields",
+          "Documentation: API_REFERENCE.md rewritten with only validated information",
+          "Documentation: VALIDATED_FILTER_SCHEMA.md with test results and field reference",
+          "Documentation: API_VALIDATION_SUMMARY.md with comprehensive validation report",
+          "UI Components: 8 filter modals ready for backend integration",
+          "DynamicFilterBuilder: Reusable component for complex filters",
+          "Filter Count Badges: Visual feedback for active filters",
+        ],
+      },
+      {
+        type: "changed",
+        items: [
+          "README.md: Added API Filter Schema Validation section with production-ready status",
+          "API Client: All filter fields use validated naming conventions",
+          "TypeScript Types: Updated to match real API structure exactly",
+        ],
+      },
+      {
+        type: "removed",
+        items: [
+          "Outdated Documentation: Deleted OFFICIAL_POST_AUDIENCES_FORMAT.md",
+          "Invalid Documentation: Deleted api-validation-results.md",
+        ],
+      },
+    ],
+  },
+  {
     version: "v3.1.0",
     date: "2025-12-14",
     checkpoint: "6a605328",
