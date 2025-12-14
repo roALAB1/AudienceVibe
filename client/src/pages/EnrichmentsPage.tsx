@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Plus, Database, TrendingUp, Users, X, Filter, Calendar, Clock, CheckCircle2, Pause, Play, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,12 +62,26 @@ export default function EnrichmentsPage() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [selectedEnrichment, setSelectedEnrichment] = useState<Enrichment | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  // Fetch enrichment jobs from API
-  const { data: jobsResponse, isLoading, error, refetch } = trpc.audienceLabAPI.enrichment.getJobs.useQuery({
-    page: 1,
-    pageSize: 100, // Fetch all jobs for now
-  });
+  // Fetch enrichment jobs from API with real-time polling
+  const { data: jobsResponse, isLoading, error, refetch, dataUpdatedAt } = trpc.audienceLabAPI.enrichment.getJobs.useQuery(
+    {
+      page: 1,
+      pageSize: 100, // Fetch all jobs for now
+    },
+    {
+      refetchInterval: 5000, // Poll every 5 seconds for real-time updates
+      refetchIntervalInBackground: false, // Only poll when page is visible
+    }
+  );
+
+  // Update last updated timestamp when data changes
+  useEffect(() => {
+    if (dataUpdatedAt) {
+      setLastUpdated(new Date(dataUpdatedAt));
+    }
+  }, [dataUpdatedAt]);
 
   // Transform API data to match our Enrichment interface
   const enrichments: Enrichment[] = (jobsResponse?.data || []).map((job: any) => ({
@@ -121,8 +135,23 @@ export default function EnrichmentsPage() {
                 <Database className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Enrichments</h1>
-                <p className="text-sm text-gray-600">Enhance your data with additional contact and company information</p>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold text-gray-900">Enrichments</h1>
+                  {activeJobs > 0 && (
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-green-50 border border-green-200 rounded-full">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs font-medium text-green-700">Live</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm text-gray-600">
+                  Enhance your data with additional contact and company information
+                  {lastUpdated && (
+                    <span className="ml-2 text-gray-400">
+                      • Updated {lastUpdated.toLocaleTimeString()}
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
             <Button className="bg-blue-600 hover:bg-blue-700">

@@ -588,3 +588,28 @@ See SPARK_V2_STYLE_GUIDE.md and UI_REDESIGN_TEST.md for details!
 - Zero TypeScript errors
 
 See API_INTEGRATION_TEST.md and TRPC_API_REFERENCE.md for details!
+
+
+---
+
+## Implement Real-time Progress Polling
+
+- [x] Add refetchInterval to enrichment jobs query
+- [x] Set polling interval to 5 seconds for active jobs
+- [x] Add visual indicator showing live updates
+- [x] Add "Last updated" timestamp display
+- [x] Optimize polling to only run when page is visible
+- [x] Test polling with active enrichment jobs
+- [x] Verify progress bars update automatically
+- [x] Verify stats cards update in real-time
+
+✅ Real-time polling complete! Features:
+- Automatic refresh every 5 seconds
+- Only polls when page is visible (refetchIntervalInBackground: false)
+- Live badge with pulsing animation when active jobs exist
+- "Updated [time]" timestamp in header
+- Smooth updates without flickering
+- Stats cards, progress bars, and status badges update automatically
+- Zero TypeScript errors
+
+See REALTIME_POLLING_TEST.md for comprehensive test documentation!
