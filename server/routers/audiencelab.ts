@@ -338,20 +338,14 @@ export const audienceLabRouter = router({
 
     /**
      * Create a new pixel
+     * Using validated CreatePixelRequest type
      */
     create: publicProcedure
       .input(
         z.object({
-          name: z.string().min(1),
-          domain: z.string().min(1),
+          website_name: z.string().min(1, 'Website name is required'),
+          website_url: z.string().url('Valid website URL is required'),
           webhook_url: z.string().url().optional(),
-          integrations: z
-            .object({
-              google_analytics: z.object({ measurement_id: z.string() }).optional(),
-              microsoft_clarity: z.object({ project_id: z.string() }).optional(),
-            })
-            .optional(),
-          custom_params: z.record(z.string(), z.string()).optional(),
         })
       )
       .mutation(async ({ input }) => {

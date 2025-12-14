@@ -360,3 +360,42 @@ Fixed: Rewrote CSV parser to use character-by-character parsing with quote state
 - [x] List all built features and their status
 - [x] Document known issues and next steps
 - [x] Update README.md with link to PROJECT_SUMMARY.md
+
+
+---
+
+## Build Pixels Management Page
+
+- [ ] Create client/src/pages/PixelsPage.tsx with list view
+- [ ] Create client/src/components/pixels/CreatePixelDialog.tsx
+- [ ] Display install URLs with copy-to-clipboard functionality
+- [ ] Add delete functionality with confirmation dialog
+- [ ] Add loading states and error handling
+- [ ] Add route to App.tsx (/pixels)
+- [ ] Test in browser (list, create, delete, copy URL)
+- [ ] Mark all tasks as complete
+
+
+---
+
+## Rebrand to AudienceLab Vibe Platform
+
+- [ ] Update PROJECT_SUMMARY.md title and description
+- [ ] Update README.md to reflect comprehensive platform scope
+- [ ] Update package.json name and description
+- [ ] Update App.tsx title
+- [ ] Create comprehensive feature roadmap (Enrichments, Audiences, Pixels, Studio, Segments, Workflows)
+- [ ] Update all documentation references from "enrichment dashboard" to "Vibe platform"
+
+
+---
+
+## Clean Up All TypeScript Types (CRITICAL)
+
+- [x] Rewrite audiencelab-types.ts using ONLY validated schemas from API_REFERENCE.md
+- [x] Remove all assumption-based type definitions
+- [x] Update API client methods to match validated types
+- [x] Fix CreatePixelRequest to match actual API format
+- [x] Fix CreateAudienceRequest to match validated Mintlify format
+- [x] Verify all types match actual API responses from testing
+- [x] Test and resolve all TypeScript errors (0 errors!)

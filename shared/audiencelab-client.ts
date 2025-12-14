@@ -106,6 +106,8 @@ export class AudienceLabClient {
       } catch {
         // If response is not JSON, create error from status text
         errorData = {
+          message: response.statusText || `HTTP ${response.status}`,
+          code: 'UNKNOWN_ERROR',
           error: {
             code: 'UNKNOWN_ERROR',
             message: response.statusText || `HTTP ${response.status}`,
@@ -116,6 +118,8 @@ export class AudienceLabClient {
       // Ensure error data has the expected structure
       if (!errorData.error || !errorData.error.code) {
         errorData = {
+          message: errorData.error?.message || response.statusText || `HTTP ${response.status}`,
+          code: 'UNKNOWN_ERROR',
           error: {
             code: 'UNKNOWN_ERROR',
             message: errorData.error?.message || response.statusText || `HTTP ${response.status}`,
@@ -139,8 +143,8 @@ export class AudienceLabClient {
 
       // Throw error if no retry or max retries exceeded
       throw new AudienceLabAPIError(
-        errorData.error.code,
-        errorData.error.message,
+        errorData.error?.code || 'UNKNOWN_ERROR',
+        errorData.error?.message || errorData.message,
         response.status
       );
     } catch (error) {

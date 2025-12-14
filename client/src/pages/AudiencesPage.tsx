@@ -56,7 +56,7 @@ export default function AudiencesPage() {
   };
 
   // Filter audiences by search query
-  const filteredAudiences = data?.audiences.filter((audience: any) =>
+  const filteredAudiences = data?.data.filter((audience: any) =>
     audience.name.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
