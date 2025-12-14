@@ -3,6 +3,7 @@ import DashboardLayout from './components/DashboardLayout';
 import SparkPage from './pages/SparkPage';
 import AudiencesPage from './pages/AudiencesPage';
 import PixelsPage from './pages/PixelsPage';
+import EnrichmentsPage from './pages/EnrichmentsPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/spark" component={SparkPage} />
         <Route path="/audiences" component={AudiencesPage} />
         <Route path="/pixels" component={PixelsPage} />
+        <Route path="/enrichments" component={EnrichmentsPage} />
         
         {/* 404 fallback */}
         <Route>

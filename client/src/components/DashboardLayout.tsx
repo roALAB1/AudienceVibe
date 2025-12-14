@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { Sparkles, Users, Code, Home } from "lucide-react";
+import { Sparkles, Users, Code, Home, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
@@ -12,6 +12,7 @@ const navigation = [
   { name: "Spark V2", href: "/spark", icon: Sparkles },
   { name: "Audiences", href: "/audiences", icon: Users },
   { name: "Pixels", href: "/pixels", icon: Code },
+  { name: "Enrichments", href: "/enrichments", icon: Database },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
