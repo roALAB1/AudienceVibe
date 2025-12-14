@@ -13,6 +13,47 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: "v3.3.0",
+    date: "2025-12-14",
+    checkpoint: "a6dad12c",
+    sections: [
+      {
+        type: "added",
+        items: [
+          "Audience Management: Fixed CreateAudienceDialog empty filters bug (now requires filters: { city: [] } minimum)",
+          "Delete Audience: Individual delete with confirmation dialog",
+          "Bulk Actions: Multi-select audiences with checkboxes and bulk delete confirmation",
+          "Export Functionality: CSV/JSON export on both list and detail pages",
+          "Detail View: Comprehensive audience information page with analytics",
+          "Search & Pagination: Real-time search by name, configurable rows per page (10/25/50/100)",
+          "Reload Button: Refetch audience list from API",
+          "Analytics Dashboard: Key metrics cards (Total Size, Refresh Count, Status) with gradient backgrounds",
+          "Refresh Timeline: Visual representation of refresh history",
+          "Audience Health Indicators: Data Availability, Refresh Activity, Automation Status with progress bars",
+          "API Integration: GET /audiences/:id endpoint for detail view",
+          "Bulk Delete: Parallel delete operations with error handling",
+        ],
+      },
+      {
+        type: "fixed",
+        items: [
+          "CreateAudienceDialog: Fixed 500 error when passing empty filters: {} object",
+          "TypeScript Types: Updated Audience interface with missing fields (status, audience_size, etc.)",
+          "Export: Fixed CSV/JSON download functionality",
+        ],
+      },
+      {
+        type: "changed",
+        items: [
+          "AudiencesPage: Added bulk selection toolbar, export dropdown, clickable audience names",
+          "AudienceDetailPage: New page with Overview, Refresh Settings, Analytics, and Metadata sections",
+          "README.md: Updated with comprehensive audience management feature list",
+          "PROJECT_SUMMARY.md: Updated with latest features and API limitations",
+        ],
+      },
+    ],
+  },
+  {
     version: "v3.2.0",
     date: "2025-12-14",
     checkpoint: "dfb611d4",
