@@ -62,6 +62,15 @@ AudienceLab Vibe Platform is a **complete dashboard clone** built using clean ro
 - Audience health indicators (Data Availability, Refresh Activity, Automation)
 - Reload button to refetch audience list
 - Clickable audience names for detail navigation
+- **Hybrid API Integration** - Audiences + Studio API ✨ NEW
+  - Studio API client for accessing actual audience data
+  - Segment mapping database (links audiences to Studio segments)
+  - Link Segment dialog with UUID validation
+  - View Data table showing all 74 enriched fields
+  - Paginated data display (10 records per page)
+  - Export CSV functionality for full datasets
+  - Real-time audience size from Studio metadata
+  - Comprehensive documentation (Architecture, API Guide, Implementation Guide)
 
 #### 4. **Pixels** - Tracking Pixel Management
 - 3-column table (Website Name, URL, Last Sync)
