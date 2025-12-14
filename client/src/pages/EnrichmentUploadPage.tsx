@@ -136,13 +136,13 @@ export default function EnrichmentUploadPage() {
     try {
       // Transform CSV data + mappings to API format
       const mappedColumns = fieldMappings
-        .filter(m => m.mappedField && m.mappedField !== '')
+        .filter(m => m.mappedField && m.mappedField !== '' && m.mappedField !== 'DO_NOT_IMPORT')
         .map(m => m.mappedField); // Keep UPPERCASE for columns
 
       const records = csvData.rows.map(row => {
         const record: any = {};
         fieldMappings.forEach(mapping => {
-          if (mapping.mappedField && mapping.mappedField !== '') {
+          if (mapping.mappedField && mapping.mappedField !== '' && mapping.mappedField !== 'DO_NOT_IMPORT') {
             // Convert UPPERCASE field to lowercase for records
             const apiField = mapping.mappedField.toLowerCase();
             const value = row[mapping.csvColumn];
@@ -253,7 +253,7 @@ export default function EnrichmentUploadPage() {
               <Button
                 onClick={() => {
                   setFieldMappings(prev =>
-                    prev.map(mapping => ({ ...mapping, mappedField: '', isAutoMapped: false }))
+                    prev.map(mapping => ({ ...mapping, mappedField: 'DO_NOT_IMPORT', isAutoMapped: false }))
                   );
                   toast.success('All fields set to "Do Not Import"');
                 }}
@@ -359,7 +359,7 @@ function FieldMappingRow({ mapping, onMappingChange }: FieldMappingRowProps) {
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
-            <SelectItem value="" className="font-medium text-gray-500 hover:bg-gray-100">
+            <SelectItem value="DO_NOT_IMPORT" className="font-medium text-gray-500 hover:bg-gray-100">
               Do Not Import
             </SelectItem>
             {filteredFields.map(field => (

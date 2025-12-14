@@ -1017,3 +1017,14 @@ See SIMPLIFIED_ENRICHMENTS_TEST.md and AUDIENCELAB_UPLOAD_RESEARCH.md for detail
 - [x] Test "Do Not Import" functionality
 - [x] Test "DO NOT IMPORT ALL" button
 - [ ] Test on different screen sizes (needs user testing)
+
+
+---
+
+## Fix Radix UI Select Empty String Error (CRITICAL)
+
+- [x] Change "Do Not Import" SelectItem value from "" to "DO_NOT_IMPORT"
+- [x] Update bulk action button to use "DO_NOT_IMPORT" value
+- [x] Update validation logic to treat "DO_NOT_IMPORT" as unmapped (already handled)
+- [x] Update API submission to filter out "DO_NOT_IMPORT" fields
+- [x] Test in browser to verify error is resolved (no console errors)
