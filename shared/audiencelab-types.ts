@@ -23,6 +23,11 @@ export interface Audience {
   refresh_interval: string | null;  // API returns string, not number
   scheduled_refresh: boolean;
   webhook_url: string | null;
+  // Additional fields from API responses
+  audience_size?: number;
+  created_at?: string;
+  last_refreshed?: string | null;
+  refresh_count?: number;
 }
 
 /**

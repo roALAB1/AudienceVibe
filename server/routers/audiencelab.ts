@@ -220,6 +220,24 @@ export const audienceLabRouter = router({
       }),
 
     /**
+     * Get a specific audience by ID
+     */
+    getById: publicProcedure
+      .input(z.object({ id: z.string() }))
+      .query(async ({ input }) => {
+        try {
+          const client = getClient();
+          return await client.getAudience(input.id);
+        } catch (error: any) {
+          throw new TRPCError({
+            code: error.statusCode === 404 ? 'NOT_FOUND' : 'INTERNAL_SERVER_ERROR',
+            message: error.message || 'Failed to fetch audience',
+            cause: error,
+          });
+        }
+      }),
+
+    /**
      * Delete an audience
      */
     delete: publicProcedure

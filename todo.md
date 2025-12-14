@@ -1725,3 +1725,17 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [ ] Enable seniority, industry, and department filters in frontend
 - [ ] Test wrapper API with all business filter combinations
 - [ ] Update filter-mapper.ts to use wrapper API instead of public API
+
+### Phase 3: Enhanced Audience Management Features
+- [x] Remove non-functional refresh button (no API endpoint exists)
+- [x] Add "Reload List" button to refetch audiences from API
+- [x] Test reload functionality end-to-end
+- [x] Add checkbox selection to audience table
+- [x] Implement bulk delete action
+- [x] Add bulk action toolbar/buttons
+- [x] Test bulk actions end-to-end - SUCCESS: Bulk selection and delete confirmation working
+- [x] Create AudienceDetailPage component
+- [x] Add routing for /audiences/:id
+- [x] Display audience details (filters, stats, history)
+- [x] Add navigation from table to detail page
+- [x] Test audience detail view end-to-end - SUCCESS: Detail page displays all audience information

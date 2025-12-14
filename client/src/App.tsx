@@ -8,6 +8,7 @@ import EnrichmentUploadPage from './pages/EnrichmentUploadPage';
 import ChangelogPage from './pages/ChangelogPage';
 import AudienceFilterBuilderPage from './pages/AudienceFilterBuilderPage';
 import ApiLogsPage from './pages/ApiLogsPage';
+import AudienceDetailPage from './pages/AudienceDetailPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/spark" component={SparkPage} />
         <Route path="/audiences" component={AudiencesPage} />
         <Route path="/audiences/:id/filters" component={AudienceFilterBuilderPage} />
+        <Route path="/audiences/:id" component={AudienceDetailPage} />
         <Route path="/pixels" component={PixelsPage} />
         <Route path="/enrichments" component={EnrichmentsPage} />
         <Route path="/enrichments/upload" component={EnrichmentUploadPage} />

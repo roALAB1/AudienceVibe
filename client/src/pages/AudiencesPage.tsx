@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Plus, RefreshCw, ArrowUpDown, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
+import { Link } from 'wouter';
 import { toast } from 'sonner';
 import CreateAudienceDialog from '@/components/audiences/CreateAudienceDialog';
 import {
@@ -36,6 +37,8 @@ export default function AudiencesPage() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [audienceToDelete, setAudienceToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
   // Fetch audiences
   const { data, isLoading, error, refetch } = trpc.audienceLabAPI.audiences.list.useQuery({
@@ -60,9 +63,9 @@ export default function AudiencesPage() {
     }
   };
 
-  const handleRefresh = async (audienceId: string) => {
-    toast.info('Refresh functionality coming soon');
-    // TODO: Implement refresh API call
+  const handleReload = () => {
+    refetch();
+    toast.success('Audience list reloaded');
   };
 
   // Get utils for invalidation
@@ -90,6 +93,55 @@ export default function AudiencesPage() {
     if (audienceToDelete) {
       deleteMutation.mutate({ id: audienceToDelete.id });
     }
+  };
+
+  // Bulk selection handlers
+  const toggleSelection = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedAudiences.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedAudiences.map((a: any) => a.id)));
+    }
+  };
+
+  const handleBulkDelete = () => {
+    setBulkDeleteDialogOpen(true);
+  };
+
+  const handleBulkDeleteConfirm = async () => {
+    const idsToDelete = Array.from(selectedIds);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const id of idsToDelete) {
+      try {
+        await deleteMutation.mutateAsync({ id });
+        successCount++;
+      } catch (error) {
+        errorCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`Successfully deleted ${successCount} audience(s)`);
+      utils.audienceLabAPI.audiences.list.invalidate();
+    }
+    if (errorCount > 0) {
+      toast.error(`Failed to delete ${errorCount} audience(s)`);
+    }
+
+    setSelectedIds(new Set());
+    setBulkDeleteDialogOpen(false);
   };
 
   // Filter and sort audiences
@@ -185,6 +237,33 @@ export default function AudiencesPage() {
           <h1 className="text-3xl font-bold text-gray-900">Audience Lists</h1>
         </div>
 
+        {/* Bulk Actions Toolbar */}
+        {selectedIds.size > 0 && (
+          <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+            <span className="text-sm font-medium text-blue-900">
+              {selectedIds.size} audience(s) selected
+            </span>
+            <div className="flex gap-2">
+              <Button
+                onClick={handleBulkDelete}
+                variant="destructive"
+                size="sm"
+                className="gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Selected
+              </Button>
+              <Button
+                onClick={() => setSelectedIds(new Set())}
+                variant="outline"
+                size="sm"
+              >
+                Clear Selection
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Search and Create */}
         <div className="mb-6 flex items-center gap-4">
           <div className="flex-1">
@@ -195,9 +274,16 @@ export default function AudiencesPage() {
               className="max-w-md"
             />
           </div>
-          <Button onClick={() => setCreateDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-            Create
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleReload} variant="outline" className="gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Reload
+            </Button>
+            <Button onClick={() => setCreateDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-1" />
+              Create
+            </Button>
+          </div>
         </div>
 
         {/* Loading State */}
@@ -223,6 +309,14 @@ export default function AudiencesPage() {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  <th className="px-4 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.size === paginatedAudiences.length && paginatedAudiences.length > 0}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('name')}
@@ -288,15 +382,27 @@ export default function AudiencesPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {paginatedAudiences.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                       {searchQuery ? 'No audiences found matching your search.' : 'No audiences yet.'}
                     </td>
                   </tr>
                 ) : (
                   paginatedAudiences.map((audience: any) => (
                     <tr key={audience.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {audience.name}
+                      <td className="px-4 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(audience.id)}
+                          onChange={() => toggleSelection(audience.id)}
+                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <Link href={`/audiences/${audience.id}`}>
+                          <span className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer">
+                            {audience.name}
+                          </span>
+                        </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {audience.audience_size === 0 ? (
@@ -325,22 +431,13 @@ export default function AudiencesPage() {
                         {formatDate(audience.next_scheduled_refresh)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleRefresh(audience.id)}
-                            className="text-blue-600 hover:text-blue-800"
-                            title="Refresh audience"
-                          >
-                            <RefreshCw className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick({ id: audience.id, name: audience.name })}
-                            className="text-red-600 hover:text-red-800"
-                            title="Delete audience"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => handleDeleteClick({ id: audience.id, name: audience.name })}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete audience"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -439,6 +536,30 @@ export default function AudiencesPage() {
               disabled={deleteMutation.isPending}
             >
               {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Delete Confirmation Dialog */}
+      <AlertDialog open={bulkDeleteDialogOpen} onOpenChange={setBulkDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Multiple Audiences</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{selectedIds.size} audience(s)</strong>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setBulkDeleteDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleBulkDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? 'Deleting...' : `Delete ${selectedIds.size} Audience(s)`}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
