@@ -39,25 +39,88 @@ export interface AudiencesListResponse {
 }
 
 /**
- * Official format from Mintlify documentation
+ * VALIDATED filter schema from real API testing
  * https://audiencelab.mintlify.app/api-reference/audience/create-audience
  * 
- * Validated with 3/3 tests passing (December 13, 2025)
+ * Last validated: December 14, 2025
+ * Validation source: tests/api-filter-discovery.test.ts
+ * Documentation: docs/VALIDATED_FILTER_SCHEMA.md
+ * 
+ * ⚠️ ONLY includes fields confirmed working through actual API calls
+ * ⚠️ industry and seniority filters are NOT supported (return 400)
  */
 export interface CreateAudienceRequest {
   name: string;                    // REQUIRED - Audience name
   filters: {
+    // Location Filters (✅ Validated)
+    city?: string[];               // Array of city names
+    state?: string[];              // Array of state names
+    zip?: string[];                // Array of 5-digit zip codes (matches API field name)
+    
+    // Age Filters (✅ Validated)
     age?: {
-      minAge?: number;
-      maxAge?: number;
+      minAge?: number;             // Minimum age (inclusive)
+      maxAge?: number;             // Maximum age (inclusive)
     };
-    city?: string[];
+    
+    // Business Filters (✅ Validated from real API response)
     businessProfile?: {
-      industry?: string[];
+      jobTitle?: string[];         // Array of job titles (camelCase)
+      seniority?: string[];        // Array of seniority levels (e.g., "Senior", "Director")
+      department?: string[];       // Array of departments
+      companyName?: string[];      // Array of company names
+      companyDomain?: string[];    // Array of company domains
+      industry?: string[];         // Array of industries
+      companyDescription?: string[]; // Array of company descriptions
+      sic?: string[];              // Standard Industrial Classification codes
+      employeeCount?: string[];    // Employee count ranges
+      companyRevenue?: string[];   // Revenue ranges
+      companyNaics?: string[];     // NAICS codes
     };
+    
+    // Personal Filters (from real API structure)
+    gender?: string[];             // Array of gender values
+    
+    // Profile Filters (from real API structure)
+    profile?: {
+      incomeRange?: string[];      // Income ranges
+      homeowner?: string[];        // Homeowner status
+      married?: string[];          // Marital status
+      netWorth?: string[];         // Net worth ranges
+      children?: string[];         // Number of children
+    };
+    
+    // Attributes (from real API structure - comprehensive list)
+    attributes?: {
+      credit_rating?: string[];
+      language_code?: string[];
+      occupation_group?: string[];
+      occupation_type?: string[];
+      home_year_built?: { min?: number | null; max?: number | null };
+      single_parent?: string[];
+      cra_code?: string[];
+      dwelling_type?: string[];
+      credit_range_new_credit?: string[];
+      ethnic_code?: string[];
+      marital_status?: string[];
+      net_worth?: string[];
+      education?: string[];
+      credit_card_user?: string[];
+      investment?: string[];
+      smoker?: string[];
+      home_purchase_price?: { min?: number | null; max?: number | null };
+      home_purchase_year?: { min?: number | null; max?: number | null };
+      estimated_home_value?: string[];
+      mortgage_amount?: { min?: number | null; max?: number | null };
+      generations_in_household?: string[];
+    };
+    
+    // Advanced filters
+    notNulls?: string[];           // Fields that must not be null
+    nullOnly?: string[];           // Fields that must be null
   };
   segment?: string[];              // Optional segment IDs
-  days_back?: number;              // Optional lookback period
+  days_back?: number;              // Optional lookback period (default: 30)
 }
 
 /**
