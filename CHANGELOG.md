@@ -5,6 +5,66 @@ All notable changes to the AudienceLab Enrichment Dashboard will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2025-12-14
+
+### Added - Studio API Investigation & Comprehensive Documentation 📚
+
+#### Studio API Discovery
+- **Reverse-engineered Studio API** - Investigated network traffic to discover how to access actual audience data
+- **Segments API endpoint** - `GET /segments/:id` returns actual audience records with all 74 enriched fields
+- **Pagination support** - Tested with page/page_size parameters (max 10,000 records per page)
+- **Verified response format** - Documented actual API response structure with sample data
+- **Authentication confirmed** - Uses same `X-API-KEY` header as Audiences API
+
+#### API Architecture Documentation
+- **AUDIENCELAB_ARCHITECTURE.md** - Comprehensive guide explaining the two-API system
+  - Audiences API (Management Layer) - Create, delete, list audiences
+  - Studio API (Data Access Layer) - View records, get size, export data
+  - Data flow diagrams and integration patterns
+  - Common mistakes and best practices
+- **STUDIO_API_GUIDE.md** - Complete integration guide with verified examples
+  - Step-by-step segment creation process
+  - cURL, JavaScript, and TypeScript examples
+  - Pagination implementation patterns
+  - Export to CSV functionality
+  - Error handling and retry logic
+  - Rate limiting best practices
+- **HYBRID_IMPLEMENTATION_GUIDE.md** - Full implementation plan
+  - Backend Studio API client architecture
+  - Database schema for segment mapping
+  - tRPC router structure
+  - Frontend components (data table, export)
+  - Testing checklist
+  - Deployment guide
+
+#### Key Discoveries
+- **Audiences API limitation** - `GET /audiences/:id` only returns `{status: "no data"}`, cannot access records
+- **Studio is required** - Only way to access actual audience data programmatically
+- **Hybrid approach needed** - Must use both APIs for complete functionality
+  - Audiences API for management (create, delete, configure)
+  - Studio API for data access (view, export, analytics)
+- **Segment creation** - Currently manual via Studio UI, future API automation planned
+
+#### Audience Detail Page Fix
+- **Fixed zero audience size** - Updated to show "Not Available" with API limitation notice
+- **Removed non-existent fields** - audience_size, created_at, last_refreshed, refresh_count
+- **Updated TypeScript types** - Audience interface now matches actual API response (6 fields only)
+- **Clear user messaging** - Explains API limitations and directs users to Studio for data access
+
+### Changed
+- **Audience types** - Removed fields that don't exist in API response
+- **AudienceDetailPage** - Shows only available data with clear notices about limitations
+- **Documentation structure** - Added `/docs/` with three comprehensive guides
+- **todo.md** - Added hybrid implementation tasks
+
+### Technical Details
+- **API Testing** - Direct cURL tests confirmed Studio API works perfectly
+- **Sample data saved** - `studio-api-response-sample.json` with real response
+- **Network traffic analysis** - Captured Studio UI behavior to understand workflow
+- **All documentation verified** - No assumptions, only tested facts
+
+---
+
 ## [3.3.0] - 2025-12-14
 
 ### Added - Advanced Audience Management Features ✅
