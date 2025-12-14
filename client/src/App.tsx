@@ -1,23 +1,36 @@
-import { Route, Switch } from 'wouter';
+import { Route, Switch, Redirect } from 'wouter';
+import DashboardLayout from './components/DashboardLayout';
 import SparkPage from './pages/SparkPage';
 import AudiencesPage from './pages/AudiencesPage';
+import PixelsPage from './pages/PixelsPage';
 
 function App() {
   return (
-    <Switch>
-      <Route path="/" component={SparkPage} />
-      <Route path="/audiences" component={AudiencesPage} />
-      <Route>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
-            <a href="/" className="text-blue-600 hover:underline">
-              Go back home
-            </a>
+    <DashboardLayout>
+      <Switch>
+        {/* Redirect home to Spark V2 */}
+        <Route path="/">
+          {() => <Redirect to="/spark" />}
+        </Route>
+        
+        {/* Main routes */}
+        <Route path="/spark" component={SparkPage} />
+        <Route path="/audiences" component={AudiencesPage} />
+        <Route path="/pixels" component={PixelsPage} />
+        
+        {/* 404 fallback */}
+        <Route>
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+              <a href="/spark" className="text-blue-600 hover:underline">
+                Go to Spark V2
+              </a>
+            </div>
           </div>
-        </div>
-      </Route>
-    </Switch>
+        </Route>
+      </Switch>
+    </DashboardLayout>
   );
 }
 
