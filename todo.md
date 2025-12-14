@@ -1145,3 +1145,203 @@ See SIMPLIFIED_ENRICHMENTS_TEST.md and AUDIENCELAB_UPLOAD_RESEARCH.md for detail
 - [x] Log API response (success or error) to console (✅ [API RESPONSE] or ❌ [API ERROR])
 - [x] Add request ID for tracking (timestamp in logs)
 - [x] Make logs easily readable for debugging (emoji prefixes: 🚀 🎯 ✅ ❌ 🌐)
+
+
+---
+
+## Fix Bad Request Error on Enrichment Submission (USER REPORTED)
+
+- [ ] Check server logs for detailed error message
+- [ ] Capture actual API request payload from user's submission
+- [ ] Compare request format with successful test submissions
+- [ ] Identify validation or format issue causing 400 error
+- [ ] Fix the root cause
+- [ ] Test submission with user's workflow
+- [ ] Verify fix resolves the Bad Request error
+
+
+---
+
+## Audience Creation Feature (NEW PRIORITY)
+
+### Phase 1: Research AudienceLab Audience Creation Flow
+- [ ] Access AudienceLab dashboard and navigate to audience creation
+- [ ] Document complete audience creation wizard flow
+- [ ] Screenshot and analyze each step of the wizard
+- [ ] Document all available filter types and their options
+- [ ] Document filter builder UI/UX patterns (add/remove, AND/OR logic)
+- [ ] Document audience preview functionality
+- [ ] Document validation rules and error messages
+- [ ] Create comprehensive AUDIENCE_CREATION_SPEC.md document
+
+### Phase 2: Design Audience Creation Wizard UI
+- [ ] Design multi-step wizard structure (Name → Filters → Preview → Save)
+- [ ] Create CreateAudienceWizard component structure
+- [ ] Create AudienceNameStep component (name, description inputs)
+- [ ] Create FilterBuilderStep component (main filter builder UI)
+- [ ] Create AudiencePreviewStep component (size estimate, sample data)
+- [ ] Design step navigation (Back, Next, Save buttons)
+- [ ] Add progress indicator for wizard steps
+
+### Phase 3: Build Filter Builder Component
+- [ ] Create FilterBuilder component with add/remove filters
+- [ ] Create DemographicFilter component (age, gender, income, net worth)
+- [ ] Create LocationFilter component (city, state, country, zip, radius)
+- [ ] Create JobFilter component (title, seniority, department, experience)
+- [ ] Create CompanyFilter component (name, industry, size, revenue)
+- [ ] Create InterestFilter component (skills, interests, behaviors)
+- [ ] Create CustomAttributeFilter component (custom fields)
+- [ ] Implement AND/OR boolean logic toggle between filter groups
+- [ ] Add filter validation (required fields, valid values)
+- [ ] Add "Duplicate Filter" functionality
+- [ ] Add "Clear All Filters" functionality
+
+### Phase 4: Integrate Audience Preview API
+- [ ] Research audience preview/estimate API endpoint
+- [ ] Create tRPC procedure for audience size estimation
+- [ ] Implement real-time preview as filters are added/changed
+- [ ] Show estimated audience size with loading state
+- [ ] Display sample audience members (if API provides)
+- [ ] Add refresh preview button
+- [ ] Handle preview errors gracefully
+
+### Phase 5: Implement Audience Creation API
+- [ ] Update tRPC audienceLabAPI.audiences.create procedure
+- [ ] Transform wizard data to API format
+- [ ] Add comprehensive error handling
+- [ ] Add loading states during creation
+- [ ] Add success toast notification
+- [ ] Redirect to audiences list on success
+- [ ] Add "Create Another" option after success
+
+### Phase 6: Connect to Audiences List Page
+- [ ] Update AudiencesPage to open CreateAudienceWizard on "Create" button
+- [ ] Add audience detail view modal
+- [ ] Add edit audience functionality (reuse wizard)
+- [ ] Add delete audience with confirmation
+- [ ] Add refresh audience action
+- [ ] Test complete CRUD flow
+
+### Phase 7: Testing & Validation
+- [ ] Test audience creation with all filter types
+- [ ] Test filter combinations (AND/OR logic)
+- [ ] Test audience preview accuracy
+- [ ] Test edit existing audience
+- [ ] Test delete audience
+- [ ] Test error scenarios (network, validation, API errors)
+- [ ] Test with real AudienceLab API
+- [ ] Document any limitations or issues
+- [ ] Create checkpoint after completion
+
+
+### Phase 1 CONTINUATION: Research Remaining Filter Categories
+- [ ] Research Intent Filters - document all available fields
+- [ ] Research Date Filters - document all available fields
+- [ ] Research Family Filters - document all available fields
+- [ ] Research Housing Filters - document all available fields
+- [ ] Research Contact Filters - document all available fields
+- [ ] Update AUDIENCE_CREATION_SPEC.md with complete filter documentation
+- [ ] Create comprehensive filter field reference document
+
+
+---
+
+## Audience Creation Feature - Filter Research (COMPLETE)
+
+### Phase 1: Complete Filter Research ✅
+- [x] Research Intent filter category (3 methods: Premade, Keyword, Custom)
+- [x] Research Date filter category (empty/placeholder)
+- [x] Research Business filter category (7 fields)
+- [x] Research Financial filter category (10 dynamic fields)
+- [x] Research Personal filter category (Age Range + 5 dynamic fields)
+- [x] Research Family filter category (5 dynamic fields)
+- [x] Research Housing filter category (6 dynamic fields)
+- [x] Research Location filter category (3 fields)
+- [x] Research Contact filter category (5 toggle switches)
+- [x] Document all filter fields in COMPLETE_AUDIENCE_FILTERS_SPEC.md
+- [x] Create TypeScript data models for all 9 filter categories
+- [x] Define component architecture
+- [x] Document 3 UI patterns (Individual Fields, Dynamic Builder, Toggle Switches)
+
+**Deliverables:**
+- ✅ COMPLETE_AUDIENCE_FILTERS_SPEC.md (comprehensive 700+ line specification)
+- ✅ All 9 filter categories documented with exact field names
+- ✅ TypeScript interfaces for all filter types
+- ✅ Component architecture defined
+- ✅ API endpoint requirements documented
+- ✅ Implementation phases outlined
+
+### Phase 2: Basic Audience Creation Flow (NEXT)
+- [ ] Create AudienceListPage component
+- [ ] Implement CreateAudienceDialog (Step 1: Name only)
+- [ ] Build AudienceFilterBuilderPage layout
+- [ ] Add filter category tabs (9 tabs)
+- [ ] Implement empty state with "Build Audience" CTA
+- [ ] Add Preview and Generate Audience buttons
+- [ ] Add routes to App.tsx
+
+### Phase 3: Filter Modals (Priority Order)
+- [ ] Business filters modal (7 fields, AI keyword generator)
+- [ ] Location filters modal (3 fields)
+- [ ] Intent filters modal (3 methods with conditional fields)
+- [ ] Contact filters modal (5 toggle switches)
+- [ ] Personal filters modal (Age Range + dynamic builder)
+- [ ] Financial filters modal (dynamic builder)
+- [ ] Family filters modal (dynamic builder)
+- [ ] Housing filters modal (dynamic builder)
+- [ ] Date filters modal (if needed)
+
+### Phase 4: Actions & Integration
+- [ ] Implement Preview functionality (estimate audience size)
+- [ ] Implement Generate Audience action
+- [ ] Integrate with AudienceLab API
+- [ ] Add filter persistence
+- [ ] Add validation and error handling
+
+### Phase 5: Advanced Features (Future)
+- [ ] AI keyword generator (Intent & Business)
+- [ ] Custom intent creation
+- [ ] Filter templates/presets
+- [ ] Audience duplication
+- [ ] Bulk actions
+
+**Priority for MVP:**
+Focus on Business, Location, Intent, and Contact filters first - these cover most B2B use cases.
+
+
+
+---
+
+## Vibe Code Prototype - Phase 2: Basic UI Implementation (IN PROGRESS)
+
+### Core Page Components
+- [x] Create AudiencesPage.tsx with audience list table (already exists)
+- [x] Create CreateAudienceDialog.tsx (Step 1: Name input only)
+- [x] Create AudienceFilterBuilderPage.tsx (Step 2: Filter configuration)
+- [x] Add routes to App.tsx (/audiences, /audiences/:id/filters)
+
+### Filter Builder Page Layout
+- [x] Create FilterCategoryTabs component (9 tabs: Intent, Date, Business, Financial, Personal, Family, Housing, Location, Contact)
+- [x] Create EmptyState component with "Build Audience" CTA
+- [x] Add Preview button (top right)
+- [x] Add Generate Audience button (top right)
+- [x] Add page title with audience name
+
+### Navigation Integration
+- [x] Add Audiences link to DashboardLayout sidebar (already exists)
+- [ ] Test navigation flow: List → Create → Filter Builder
+- [ ] Add breadcrumbs (Home > Audiences > {Audience Name}) - Optional for MVP
+
+### TypeScript Types
+- [x] Create types/audience-filters.ts with all filter interfaces
+- [x] Create types/audience.ts with Audience model
+- [ ] Export all types from index - Not needed, direct imports work
+
+### Testing
+- [ ] Test Create Audience dialog opens and closes
+- [ ] Test audience creation redirects to filter builder
+- [ ] Test all 9 filter tabs are visible
+- [ ] Test empty state displays correctly
+- [x] Verify no TypeScript errors
+- [x] Verify dev server runs without errors
+

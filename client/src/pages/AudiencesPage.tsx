@@ -370,10 +370,6 @@ export default function AudiencesPage() {
       <CreateAudienceDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        onSuccess={() => {
-          refetch();
-          setCreateDialogOpen(false);
-        }}
       />
     </div>
   );

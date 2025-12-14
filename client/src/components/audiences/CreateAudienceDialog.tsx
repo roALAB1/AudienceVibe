@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { trpc } from '@/lib/trpc';
+import { useLocation } from 'wouter';
 import {
   Dialog,
   DialogContent,
@@ -11,211 +11,89 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface CreateAudienceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
 }
 
 export default function CreateAudienceDialog({
   open,
   onOpenChange,
-  onSuccess,
 }: CreateAudienceDialogProps) {
   const [name, setName] = useState('');
-  const [minAge, setMinAge] = useState('');
-  const [maxAge, setMaxAge] = useState('');
-  const [cities, setCities] = useState('');
-  const [industries, setIndustries] = useState('');
-  const [daysBack, setDaysBack] = useState('30');
+  const [isCreating, setIsCreating] = useState(false);
+  const [, setLocation] = useLocation();
 
-  const createMutation = trpc.audienceLabAPI.audiences.create.useMutation({
-    onSuccess: (data) => {
-      toast.success(`Audience created successfully! ID: ${data.audienceId}`);
-      resetForm();
-      onSuccess();
-    },
-    onError: (error: any) => {
-      toast.error(`Failed to create audience: ${error.message}`);
-    },
-  });
+  const handleCreate = async () => {
+    if (!name.trim()) return;
 
-  const resetForm = () => {
-    setName('');
-    setMinAge('');
-    setMaxAge('');
-    setCities('');
-    setIndustries('');
-    setDaysBack('30');
+    setIsCreating(true);
+    
+    try {
+      // TODO: Replace with actual API call
+      // For now, generate a temporary ID and navigate
+      const tempId = `temp-${Date.now()}`;
+      
+      // Navigate to filter builder page
+      setLocation(`/audiences/${tempId}/filters`);
+      
+      // Close dialog and reset
+      onOpenChange(false);
+      setName('');
+    } catch (error) {
+      console.error('Failed to create audience:', error);
+      // TODO: Show error toast
+    } finally {
+      setIsCreating(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Build filters object
-    const filters: any = {};
-
-    if (minAge || maxAge) {
-      filters.age = {};
-      if (minAge) filters.age.minAge = parseInt(minAge);
-      if (maxAge) filters.age.maxAge = parseInt(maxAge);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && name.trim()) {
+      handleCreate();
     }
-
-    if (cities) {
-      filters.city = cities.split(',').map((c) => c.trim()).filter(Boolean);
-    }
-
-    if (industries) {
-      filters.businessProfile = {
-        industry: industries.split(',').map((i) => i.trim()).filter(Boolean),
-      };
-    }
-
-    // Validate that we have at least one filter
-    if (Object.keys(filters).length === 0) {
-      toast.error('Please add at least one filter (age, city, or industry)');
-      return;
-    }
-
-    createMutation.mutate({
-      name,
-      filters,
-      days_back: daysBack ? parseInt(daysBack) : undefined,
-    });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Audience</DialogTitle>
+          <DialogTitle>Create Audience</DialogTitle>
           <DialogDescription>
-            Define your audience with filters. At least one filter is required.
+            Give your audience a name to get started.
           </DialogDescription>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name">
-              Audience Name <span className="text-destructive">*</span>
-            </Label>
+        
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Name</Label>
             <Input
               id="name"
+              placeholder="Enter audience name..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Software Engineers in NYC"
-              required
+              onKeyDown={handleKeyDown}
+              autoFocus
             />
           </div>
+        </div>
 
-          {/* Age Filter */}
-          <div className="space-y-2">
-            <Label>Age Range</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="minAge" className="text-sm text-muted-foreground">
-                  Min Age
-                </Label>
-                <Input
-                  id="minAge"
-                  type="number"
-                  value={minAge}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMinAge(e.target.value)}
-                  placeholder="25"
-                  min="18"
-                  max="100"
-                />
-              </div>
-              <div>
-                <Label htmlFor="maxAge" className="text-sm text-muted-foreground">
-                  Max Age
-                </Label>
-                <Input
-                  id="maxAge"
-                  type="number"
-                  value={maxAge}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMaxAge(e.target.value)}
-                  placeholder="45"
-                  min="18"
-                  max="100"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Cities Filter */}
-          <div className="space-y-2">
-            <Label htmlFor="cities">Cities</Label>
-            <Input
-              id="cities"
-              value={cities}
-              onChange={(e) => setCities(e.target.value)}
-              placeholder="New York, San Francisco, Los Angeles (comma-separated)"
-            />
-            <p className="text-sm text-muted-foreground">
-              Enter multiple cities separated by commas
-            </p>
-          </div>
-
-          {/* Industries Filter */}
-          <div className="space-y-2">
-            <Label htmlFor="industries">Industries</Label>
-            <Input
-              id="industries"
-              value={industries}
-              onChange={(e) => setIndustries(e.target.value)}
-              placeholder="Software Development, Technology, SaaS (comma-separated)"
-            />
-            <p className="text-sm text-muted-foreground">
-              Enter multiple industries separated by commas
-            </p>
-          </div>
-
-          {/* Days Back */}
-          <div className="space-y-2">
-            <Label htmlFor="daysBack">Days Back</Label>
-            <Input
-              id="daysBack"
-              type="number"
-              value={daysBack}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDaysBack(e.target.value)}
-              placeholder="30"
-              min="1"
-              max="365"
-            />
-            <p className="text-sm text-muted-foreground">
-              How many days of historical data to include
-            </p>
-          </div>
-
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                resetForm();
-                onOpenChange(false);
-              }}
-              disabled={createMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={createMutation.isPending || !name}>
-              {createMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                'Create Audience'
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={isCreating}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreate}
+            disabled={!name.trim() || isCreating}
+          >
+            {isCreating ? 'Creating...' : 'Create'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

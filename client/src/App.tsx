@@ -6,6 +6,7 @@ import PixelsPage from './pages/PixelsPage';
 import EnrichmentsPage from './pages/EnrichmentsPage';
 import EnrichmentUploadPage from './pages/EnrichmentUploadPage';
 import ChangelogPage from './pages/ChangelogPage';
+import AudienceFilterBuilderPage from './pages/AudienceFilterBuilderPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         {/* Main routes */}
         <Route path="/spark" component={SparkPage} />
         <Route path="/audiences" component={AudiencesPage} />
+        <Route path="/audiences/:id/filters" component={AudienceFilterBuilderPage} />
         <Route path="/pixels" component={PixelsPage} />
         <Route path="/enrichments" component={EnrichmentsPage} />
         <Route path="/enrichments/upload" component={EnrichmentUploadPage} />
