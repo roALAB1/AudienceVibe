@@ -3,7 +3,7 @@ import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Plus, RefreshCw, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Loader2, Plus, RefreshCw, ArrowUpDown, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import CreateAudienceDialog from '@/components/audiences/CreateAudienceDialog';
 import {
@@ -13,6 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type SortField = 'name' | 'creation_date' | 'last_refreshed' | 'audience_size' | 'refresh_count' | 'next_refresh';
 type SortDirection = 'asc' | 'desc' | null;
@@ -24,11 +34,13 @@ export default function AudiencesPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [sortField, setSortField] = useState<SortField>('creation_date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [audienceToDelete, setAudienceToDelete] = useState<{ id: string; name: string } | null>(null);
 
   // Fetch audiences
   const { data, isLoading, error, refetch } = trpc.audienceLabAPI.audiences.list.useQuery({
     page,
-    pageSize: 1000, // Fetch all for client-side sorting/filtering
+    pageSize: 100, // API max limit
   });
 
   const handleSort = (field: SortField) => {
@@ -51,6 +63,33 @@ export default function AudiencesPage() {
   const handleRefresh = async (audienceId: string) => {
     toast.info('Refresh functionality coming soon');
     // TODO: Implement refresh API call
+  };
+
+  // Get utils for invalidation
+  const utils = trpc.useUtils();
+
+  // Delete audience mutation
+  const deleteMutation = trpc.audienceLabAPI.audiences.delete.useMutation({
+    onSuccess: () => {
+      toast.success('Audience deleted successfully');
+      utils.audienceLabAPI.audiences.list.invalidate();
+      setDeleteDialogOpen(false);
+      setAudienceToDelete(null);
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete audience: ${error.message}`);
+    },
+  });
+
+  const handleDeleteClick = (audience: { id: string; name: string }) => {
+    setAudienceToDelete(audience);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (audienceToDelete) {
+      deleteMutation.mutate({ id: audienceToDelete.id });
+    }
   };
 
   // Filter and sort audiences
@@ -286,13 +325,22 @@ export default function AudiencesPage() {
                         {formatDate(audience.next_scheduled_refresh)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button
-                          onClick={() => handleRefresh(audience.id)}
-                          className="text-blue-600 hover:text-blue-800"
-                          title="Refresh audience"
-                        >
-                          <RefreshCw className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleRefresh(audience.id)}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="Refresh audience"
+                          >
+                            <RefreshCw className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick({ id: audience.id, name: audience.name })}
+                            className="text-red-600 hover:text-red-800"
+                            title="Delete audience"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -371,6 +419,30 @@ export default function AudiencesPage() {
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Audience</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{audienceToDelete?.name}</strong>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

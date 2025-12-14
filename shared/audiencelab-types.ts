@@ -46,7 +46,7 @@ export interface AudiencesListResponse {
  */
 export interface CreateAudienceRequest {
   name: string;                    // REQUIRED - Audience name
-  filters: {
+  filters?: {                      // OPTIONAL - Filter criteria
     // Location filters (3 validated)
     city?: string[];               // Array of city names
     state?: string[];              // Array of state names

@@ -126,6 +126,10 @@ Fixed: Rewrote CSV parser to use character-by-character parsing with quote state
 - [x] Validate: TypeScript compiles, tests pass
 
 ### Phase 2: Audiences Management Feature
+- [x] Fix CreateAudienceDialog empty filters bug (passing {} causes Zod validation error) - FIXED: Use city: [] minimal filter
+- [x] Test audience creation end-to-end workflow - SUCCESS: Audience created successfully
+- [x] Implement delete functionality with confirmation dialog
+- [x] Test delete functionality end-to-end - SUCCESS: Audience deleted successfully
 - [ ] Create client/src/pages/Audiences.tsx page
 - [ ] Create client/src/components/audiences/AudienceTable.tsx
 - [ ] Create client/src/components/audiences/AudienceForm.tsx
@@ -1707,3 +1711,17 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [ ] Redirect to audiences list after creation
 - [ ] Add "Preview Size" button functionality
 - [ ] Display estimated audience size before creation
+
+
+---
+
+## Dashboard API Wrapper for Business Filters
+
+- [ ] Capture dashboard authentication flow (login, session cookies)
+- [ ] Document internal dashboard API endpoints for audience creation
+- [ ] Implement dashboard authentication service in backend
+- [ ] Create wrapper endpoints that proxy requests to dashboard API
+- [ ] Transform filter format from our UI to dashboard internal format
+- [ ] Enable seniority, industry, and department filters in frontend
+- [ ] Test wrapper API with all business filter combinations
+- [ ] Update filter-mapper.ts to use wrapper API instead of public API

@@ -88,7 +88,7 @@ export const audienceLabRouter = router({
             businessProfile: z.object({
               industry: z.array(z.string()).optional(),
             }).optional(),
-          }),
+          }).optional(), // Make the entire filters object optional
           segment: z.array(z.string()).optional(),
           days_back: z.number().optional(),
         })
@@ -96,7 +96,19 @@ export const audienceLabRouter = router({
       .mutation(async ({ input }) => {
         try {
           const client = getClient();
-          return await client.createAudience(input);
+          // API requires filters field to be present (even if minimal)
+          // Pass the filters as-is if provided, otherwise use empty object
+          const request: any = {
+            name: input.name,
+            filters: input.filters || {},  // API requires this field
+          };
+          if (input.segment) {
+            request.segment = input.segment;
+          }
+          if (input.days_back) {
+            request.days_back = input.days_back;
+          }
+          return await client.createAudience(request);
         } catch (error: any) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useLocation } from 'wouter';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { trpc } from '@/lib/trpc';
+import { toast } from 'sonner';
 
 interface CreateAudienceDialogProps {
   open: boolean;
@@ -22,35 +23,42 @@ export default function CreateAudienceDialog({
   onOpenChange,
 }: CreateAudienceDialogProps) {
   const [name, setName] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
-  const [, setLocation] = useLocation();
 
-  const handleCreate = async () => {
-    if (!name.trim()) return;
+  // Get the utils to refetch audiences list
+  const utils = trpc.useUtils();
 
-    setIsCreating(true);
-    
-    try {
-      // TODO: Replace with actual API call
-      // For now, generate a temporary ID and navigate
-      const tempId = `temp-${Date.now()}`;
-      
-      // Navigate to filter builder page
-      setLocation(`/audiences/${tempId}/filters`);
-      
+  // Create audience mutation
+  const createMutation = trpc.audienceLabAPI.audiences.create.useMutation({
+    onSuccess: (data) => {
+      console.log('✅ Audience created successfully:', data);
+      toast.success('Audience created successfully');
+      // Refetch the audiences list
+      utils.audienceLabAPI.audiences.list.invalidate();
       // Close dialog and reset
       onOpenChange(false);
       setName('');
-    } catch (error) {
-      console.error('Failed to create audience:', error);
-      // TODO: Show error toast
-    } finally {
-      setIsCreating(false);
-    }
+    },
+    onError: (error) => {
+      console.error('❌ Failed to create audience:', error);
+      toast.error(`Failed to create audience: ${error.message}`);
+    },
+  });
+
+  const handleCreate = async () => {
+    if (!name.trim()) return;
+    
+    // Create audience with minimal valid filters structure
+    // API requires filters to have at least one field, use empty city array
+    createMutation.mutate({
+      name: name.trim(),
+      filters: {
+        city: [],  // Minimal valid filter - empty array is accepted by API
+      },
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && name.trim()) {
+    if (e.key === 'Enter' && name.trim() && !createMutation.isPending) {
       handleCreate();
     }
   };
@@ -75,6 +83,7 @@ export default function CreateAudienceDialog({
               onChange={(e) => setName(e.target.value)}
               onKeyDown={handleKeyDown}
               autoFocus
+              disabled={createMutation.isPending}
             />
           </div>
         </div>
@@ -83,15 +92,15 @@ export default function CreateAudienceDialog({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isCreating}
+            disabled={createMutation.isPending}
           >
             Cancel
           </Button>
           <Button
             onClick={handleCreate}
-            disabled={!name.trim() || isCreating}
+            disabled={!name.trim() || createMutation.isPending}
           >
-            {isCreating ? 'Creating...' : 'Create'}
+            {createMutation.isPending ? 'Creating...' : 'Create'}
           </Button>
         </DialogFooter>
       </DialogContent>
