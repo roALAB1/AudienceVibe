@@ -1,0 +1,8 @@
+{
+  "query": "CREATE TABLE `audience_segments` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`audienceId` varchar(255) NOT NULL,\n\t`audienceName` varchar(255) NOT NULL,\n\t`segmentId` varchar(255) NOT NULL,\n\t`segmentName` varchar(255) NOT NULL,\n\t`totalRecords` int,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `audience_segments_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `audience_segments_segmentId_unique` UNIQUE(`segmentId`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2RTfe2F36qbNVzX.2f081ab7789b --database 9KHWk38RBCScFb3yT8DJ5S --execute CREATE TABLE `audience_segments` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`audienceId` varchar(255) NOT NULL,\n\t`audienceName` varchar(255) NOT NULL,\n\t`segmentId` varchar(255) NOT NULL,\n\t`segmentName` varchar(255) NOT NULL,\n\t`totalRecords` int,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `audience_segments_id` PRIMARY KEY(`id`),\n\tCONSTRAINT `audience_segments_segmentId_unique` UNIQUE(`segmentId`)\n);",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1050 (42S01) at line 1: Table '9KHWk38RBCScFb3yT8DJ5S.audience_segments' already exists"
+  ]
+}

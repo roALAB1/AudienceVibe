@@ -67,3 +67,22 @@ export const audienceFilterConfigs = mysqlTable("audience_filter_configs", {
 
 export type AudienceFilterConfig = typeof audienceFilterConfigs.$inferSelect;
 export type InsertAudienceFilterConfig = typeof audienceFilterConfigs.$inferInsert;
+
+/**
+ * Audience Segments Mapping table
+ * Maps AudienceLab audiences to Studio segments for data access
+ * Enables hybrid API approach: Audiences API for management, Studio API for data
+ */
+export const audienceSegments = mysqlTable("audience_segments", {
+  id: int("id").autoincrement().primaryKey(),
+  audienceId: varchar("audienceId", { length: 255 }).notNull(), // AudienceLab audience ID
+  audienceName: varchar("audienceName", { length: 255 }).notNull(),
+  segmentId: varchar("segmentId", { length: 255 }).notNull().unique(), // Studio segment UUID
+  segmentName: varchar("segmentName", { length: 255 }).notNull(),
+  totalRecords: int("totalRecords"), // Cached audience size from Studio API
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AudienceSegment = typeof audienceSegments.$inferSelect;
+export type InsertAudienceSegment = typeof audienceSegments.$inferInsert;

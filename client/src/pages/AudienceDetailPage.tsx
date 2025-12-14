@@ -1,8 +1,8 @@
-import { useParams, useLocation, Link } from 'wouter';
+import { useParams, Link, useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, ArrowLeft, RefreshCw, Trash2, Download, AlertCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, RefreshCw, Trash2, Download, AlertCircle, Link as LinkIcon, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 import {
@@ -21,24 +21,52 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { LinkSegmentDialog } from '@/components/LinkSegmentDialog';
 
 export default function AudienceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [linkSegmentDialogOpen, setLinkSegmentDialogOpen] = useState(false);
+  const [viewingData, setViewingData] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
 
-  // Fetch all audiences (since GET /audiences/:id only returns {status: "no data"})
-  // We need to get the full list and find the matching audience
+  // Fetch all audiences
   const { data: audiencesList, isLoading, error, refetch } = trpc.audienceLabAPI.audiences.list.useQuery(
     { page: 1, pageSize: 100 },
     { enabled: !!id }
   );
 
-  // Find the specific audience from the list
+  // Find the specific audience
   const audience = useMemo(() => {
     if (!audiencesList?.data) return null;
     return audiencesList.data.find(a => a.id === id);
   }, [audiencesList, id]);
+
+  // Check if segment is linked
+  const { data: segmentMapping, refetch: refetchSegment } = trpc.studio.getSegmentForAudience.useQuery(
+    { audienceId: id! },
+    { enabled: !!id }
+  );
+
+  // Fetch segment data if viewing
+  const { data: segmentData, isLoading: isLoadingData } = trpc.studio.getSegmentData.useQuery(
+    {
+      segmentId: segmentMapping?.segmentId!,
+      page: currentPage,
+      pageSize: PAGE_SIZE
+    },
+    { enabled: viewingData && !!segmentMapping?.segmentId }
+  );
 
   // Get utils for invalidation
   const utils = trpc.useUtils();
@@ -54,6 +82,22 @@ export default function AudienceDetailPage() {
     },
   });
 
+  // Export CSV mutation
+  const exportMutation = trpc.studio.exportSegment.useMutation({
+    onSuccess: (data) => {
+      // Download CSV
+      const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `audience_${audience?.name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      toast.success(`Exported ${data.recordCount.toLocaleString()} records to CSV`);
+    },
+    onError: (error) => {
+      toast.error(`Failed to export: ${error.message}`);
+    }
+  });
+
   const handleDelete = () => {
     setDeleteDialogOpen(true);
   };
@@ -66,56 +110,25 @@ export default function AudienceDetailPage() {
 
   const handleReload = () => {
     refetch();
+    refetchSegment();
     toast.success('Audience details reloaded');
   };
 
-  const handleExportCSV = () => {
-    if (!audience) {
-      toast.error('No audience data to export');
+  const handleViewData = () => {
+    if (!segmentMapping) {
+      toast.error('No segment linked. Please link a segment first.');
       return;
     }
-
-    // Create CSV content
-    const headers = ['Field', 'Value'];
-    const rows = [
-      ['ID', audience.id],
-      ['Name', audience.name],
-      ['Scheduled Refresh', audience.scheduled_refresh ? 'Enabled' : 'Disabled'],
-      ['Refresh Interval', audience.refresh_interval || 'Not set'],
-      ['Next Scheduled Refresh', audience.next_scheduled_refresh || 'Not set'],
-      ['Webhook URL', audience.webhook_url || 'Not set']
-    ];
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
-
-    // Download CSV
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `audience_${audience.name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    toast.success('Audience exported to CSV');
+    setViewingData(true);
+    setCurrentPage(1);
   };
 
-  const handleExportJSON = () => {
-    if (!audience) {
-      toast.error('No audience data to export');
+  const handleExportData = () => {
+    if (!segmentMapping) {
+      toast.error('No segment linked. Please link a segment first.');
       return;
     }
-
-    // Create JSON content
-    const jsonContent = JSON.stringify(audience, null, 2);
-
-    // Download JSON
-    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `audience_${audience.name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    toast.success('Audience exported to JSON');
+    exportMutation.mutate({ segmentId: segmentMapping.segmentId });
   };
 
   const formatDate = (dateString: string | null | undefined) => {
@@ -139,7 +152,7 @@ export default function AudienceDetailPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-lg shadow p-12">
             <div className="flex justify-center items-center">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -153,7 +166,7 @@ export default function AudienceDetailPage() {
   if (error || !audience) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Audience</h3>
             <p className="text-sm text-red-700">{error?.message || 'Audience not found'}</p>
@@ -171,7 +184,7 @@ export default function AudienceDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -188,22 +201,6 @@ export default function AudienceDetailPage() {
               <RefreshCw className="w-4 h-4" />
               Reload
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Download className="w-4 h-4" />
-                  Export
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleExportCSV}>
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportJSON}>
-                  Export as JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
             <Button onClick={handleDelete} variant="destructive" size="sm" className="gap-2">
               <Trash2 className="w-4 h-4" />
               Delete
@@ -211,19 +208,129 @@ export default function AudienceDetailPage() {
           </div>
         </div>
 
-        {/* API Limitation Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+        {/* Segment Status Card */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-blue-900 mb-1">Limited Data Available</h3>
-              <p className="text-sm text-blue-800">
-                The AudienceLab API currently does not provide audience size, creation date, last refreshed date, or refresh count information. 
-                Only refresh settings and metadata are available.
-              </p>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">Data Access</h2>
+              {segmentMapping ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                      Segment Linked
+                    </Badge>
+                    <span className="text-sm text-gray-600">{segmentMapping.segmentName}</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    {segmentMapping.totalRecords?.toLocaleString() || 'Unknown'} records available
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200">
+                    No Segment Linked
+                  </Badge>
+                  <p className="text-sm text-gray-600">
+                    Link a Studio segment to view and export audience data
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2">
+              {!segmentMapping && (
+                <Button onClick={() => setLinkSegmentDialogOpen(true)} className="gap-2">
+                  <LinkIcon className="w-4 h-4" />
+                  Link Segment
+                </Button>
+              )}
+              {segmentMapping && (
+                <>
+                  <Button onClick={handleViewData} variant="outline" className="gap-2">
+                    <Database className="w-4 h-4" />
+                    {viewingData ? 'Refresh Data' : 'View Data'}
+                  </Button>
+                  <Button 
+                    onClick={handleExportData} 
+                    variant="outline" 
+                    className="gap-2"
+                    disabled={exportMutation.isPending}
+                  >
+                    {exportMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Download className="w-4 h-4" />
+                    )}
+                    Export CSV
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Data Table */}
+        {viewingData && segmentMapping && (
+          <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Audience Data</h2>
+            {isLoadingData ? (
+              <div className="flex justify-center items-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              </div>
+            ) : segmentData && segmentData.data.length > 0 ? (
+              <>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {Object.keys(segmentData.data[0]).slice(0, 8).map(key => (
+                          <TableHead key={key}>{key}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {segmentData.data.map((row, idx) => (
+                        <TableRow key={idx}>
+                          {Object.values(row).slice(0, 8).map((value, cellIdx) => (
+                            <TableCell key={cellIdx} className="max-w-[200px] truncate">
+                              {String(value || '')}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {/* Pagination */}
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-gray-600">
+                    Showing {((currentPage - 1) * PAGE_SIZE) + 1} to {Math.min(currentPage * PAGE_SIZE, segmentMapping.totalRecords || 0)} of {segmentMapping.totalRecords?.toLocaleString() || 0} records
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1 || isLoadingData}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => p + 1)}
+                      disabled={!segmentData?.has_more || isLoadingData}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-center text-gray-500 py-12">No data available</p>
+            )}
+          </div>
+        )}
 
         {/* Overview Card */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -281,91 +388,6 @@ export default function AudienceDetailPage() {
           </div>
         </div>
 
-        {/* Analytics Card */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Analytics</h2>
-          
-          {/* Key Metrics */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-              <p className="text-sm text-blue-600 font-medium mb-1">Audience Size</p>
-              <p className="text-2xl font-bold text-blue-900">Not Available</p>
-              <p className="text-xs text-blue-600 mt-1">API limitation</p>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-              <p className="text-sm text-green-600 font-medium mb-1">Refresh Count</p>
-              <p className="text-2xl font-bold text-green-900">Not Available</p>
-              <p className="text-xs text-green-600 mt-1">API limitation</p>
-            </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-              <p className="text-sm text-purple-600 font-medium mb-1">Status</p>
-              <p className="text-2xl font-bold text-purple-900">{audience.scheduled_refresh ? 'Active' : 'Inactive'}</p>
-              <p className="text-xs text-purple-600 mt-1">{audience.scheduled_refresh ? 'auto-refresh' : 'manual only'}</p>
-            </div>
-          </div>
-
-          {/* Refresh Timeline */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Refresh Timeline</h3>
-            <div className="space-y-2">
-              {audience.next_scheduled_refresh && (
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                  <span className="text-gray-600">Next Refresh:</span>
-                  <span className="font-medium text-gray-900">{formatDate(audience.next_scheduled_refresh)}</span>
-                </div>
-              )}
-              {!audience.next_scheduled_refresh && (
-                <p className="text-sm text-gray-500 italic">No scheduled refreshes configured</p>
-              )}
-            </div>
-          </div>
-
-          {/* Audience Health */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Audience Health</h3>
-            <div className="space-y-3">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Data Availability</span>
-                  <span className="font-medium text-gray-900">Unknown</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="h-2 rounded-full bg-gray-400" style={{ width: '0%' }}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">API does not provide audience size information</p>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Automation Status</span>
-                  <span className="font-medium text-gray-900">
-                    {audience.scheduled_refresh ? 'Enabled' : 'Disabled'}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full ${audience.scheduled_refresh ? 'bg-purple-500' : 'bg-gray-400'}`}
-                    style={{ width: audience.scheduled_refresh ? '100%' : '0%' }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Metadata Card */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Metadata</h2>
-          <div className="space-y-3">
-            <div>
-              <p className="text-sm text-gray-500 mb-1">Audience ID</p>
-              <p className="text-sm font-mono text-gray-900 bg-gray-50 p-2 rounded border border-gray-200">
-                {audience.id}
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
@@ -393,6 +415,18 @@ export default function AudienceDetailPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Link Segment Dialog */}
+        <LinkSegmentDialog
+          open={linkSegmentDialogOpen}
+          onOpenChange={setLinkSegmentDialogOpen}
+          audienceId={id!}
+          audienceName={audience.name}
+          onSuccess={() => {
+            refetchSegment();
+            utils.studio.getSegmentForAudience.invalidate();
+          }}
+        />
       </div>
     </div>
   );

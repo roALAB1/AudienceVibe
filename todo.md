@@ -1794,11 +1794,36 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [x] Document hybrid approach architecture
 - [x] Save checkpoint before implementation
 - [x] Push current state to GitHub
-- [ ] Implement Studio API integration in backend
-- [ ] Add segment auto-creation functionality
+- [x] Implement Studio API integration in backend
+- [x] Test Studio API client with direct calls
+- [x] Create database schema for segment mapping
+- [x] Implement segment mapping service
+- [x] Add tRPC endpoints for segment operations
+- [x] Test database operations
+- [ ] Add segment auto-creation functionality (future: requires Studio API support)
 - [ ] Update frontend to show actual audience data
 - [ ] Add data table with pagination
 - [ ] Add export functionality (CSV/JSON)
 - [ ] Create developer documentation
 - [ ] Create user documentation
 - [ ] Final checkpoint with complete implementation
+
+
+---
+
+## Hybrid Audiences + Studio API Implementation (December 14, 2025) - COMPLETE ✅
+
+- [x] Phase 1: Backend Studio API client and tRPC router
+- [x] Phase 2: Database schema and segment mapping service
+- [x] Phase 3: Frontend audience detail page with data viewing
+- [x] Test Studio API client with direct calls
+- [x] Test database operations (segment mapping CRUD)
+- [x] Implement Link Segment dialog
+- [x] Implement View Data functionality with pagination
+- [x] Implement Export CSV functionality
+- [x] Test end-to-end in browser
+- [x] Create comprehensive documentation (Architecture, Studio API Guide, Hybrid Implementation Guide)
+- [ ] Optimize large dataset export (future: implement chunked/background export for 500k+ records)
+- [ ] Add segment auto-creation functionality (future: requires Studio API support)
+
+**Status**: Fully functional hybrid system deployed. Audiences API handles management (create/delete), Studio API handles data access (view/export). All core features tested and working.

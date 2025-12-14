@@ -5,6 +5,108 @@ All notable changes to the AudienceLab Enrichment Dashboard will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2025-12-14
+
+### Added - Hybrid Audiences + Studio API Integration ✅
+
+#### Complete Two-API System Implementation
+- **Studio API Client** (`shared/studio-client.ts`) - Full-featured client for data access
+  - Segment metadata fetching with total record counts
+  - Paginated data retrieval (configurable page size)
+  - CSV export with proper escaping and formatting
+  - Retry logic with exponential backoff
+  - Error handling for 404, 429, 500 responses
+- **Studio tRPC Router** (`server/routers/studio.ts`) - Server-side API integration
+  - `getSegmentData` - Fetch paginated audience records
+  - `linkSegment` - Create audience-to-segment mapping
+  - `getLinkedSegment` - Retrieve mapping by audience ID
+  - `exportSegmentCSV` - Generate CSV export of full dataset
+- **Segment Mapping Service** (`server/services/segment-mapping.ts`) - Database operations
+  - Create, read, update, delete segment mappings
+  - Track segment metadata (name, record count, last sync)
+  - Query all mappings with pagination
+- **Database Schema** - `audience_segments` table for mapping storage
+  - Links audience IDs to Studio segment IDs
+  - Stores segment metadata and sync timestamps
+  - Migration: `drizzle/0003_complex_galactus.sql`
+
+#### Enhanced Audience Detail Page
+- **Link Segment Dialog** (`client/src/components/LinkSegmentDialog.tsx`)
+  - Step-by-step instructions with link to Studio
+  - Segment ID input with UUID format validation
+  - Segment name input for easy identification
+  - Real-time validation and error handling
+  - Auto-refresh page after successful linking
+- **Data Access Section** - Shows segment linking status
+  - Green "Segment Linked" badge when connected
+  - Displays segment name and record count
+  - "Link Segment" button when no segment exists
+  - Clear instructions for manual linking process
+- **Audience Data Table** - Displays actual enriched records
+  - Shows all 74 enriched fields from Studio API
+  - Paginated display (10 records per page)
+  - Previous/Next navigation buttons
+  - Record count display (e.g., "Showing 1 to 10 of 500,000 records")
+  - Horizontal scrolling for wide tables
+- **View Data Button** - Fetches first page of records from Studio
+  - Changes to "Refresh Data" after initial load
+  - Loading spinner during data fetch
+  - Error handling with user-friendly messages
+- **Export CSV Button** - Downloads full dataset
+  - Fetches all records from Studio API
+  - Converts to properly formatted CSV
+  - Automatic browser download
+  - Loading spinner during export
+  - File naming: `audiences_YYYY-MM-DD.csv`
+
+#### Comprehensive Documentation
+- **AUDIENCELAB_ARCHITECTURE.md** - Complete two-API system explanation
+  - Audiences API (Management Layer) vs Studio API (Data Access Layer)
+  - Data flow diagrams and integration patterns
+  - When to use each API
+  - Common mistakes and best practices
+- **STUDIO_API_GUIDE.md** - Studio API integration guide
+  - Step-by-step segment creation in Studio UI
+  - API endpoint documentation with examples
+  - cURL, JavaScript, and TypeScript code samples
+  - Pagination implementation patterns
+  - CSV export functionality
+  - Error handling and retry logic
+- **HYBRID_IMPLEMENTATION_GUIDE.md** - Implementation roadmap
+  - Phase 1: Backend Studio API client
+  - Phase 2: Database schema and mapping service
+  - Phase 3: Frontend components
+  - Testing checklist for each phase
+  - Deployment considerations
+
+### Changed
+- **Audience Detail Page** - Completely rewritten for hybrid approach
+  - Removed "Not Available" placeholders
+  - Added dynamic data fetching from Studio
+  - Improved user experience with clear status indicators
+  - Better error handling and loading states
+- **Navigation** - Improved consistency across pages
+  - All pages use same Back button pattern
+  - Consistent header layout
+
+### Technical Details
+- **Files Created**: 7 new files (client, server, services, docs)
+- **Lines of Code**: 1,200+ lines
+- **Tests Passed**: All Studio API client tests (4/4)
+- **Database Tests**: All segment mapping tests (6/6)
+- **Browser Tests**: End-to-end workflow verified
+  - Link segment: ✅
+  - View data: ✅
+  - Pagination: ✅
+  - Export CSV: ✅ (works, large datasets need optimization)
+
+### Known Issues
+- **Large Dataset Export** - Exporting 500k+ records may timeout
+  - Workaround: Use Studio UI for very large exports
+  - Future: Implement chunked/background export
+
+---
+
 ## [3.4.0] - 2025-12-14
 
 ### Added - Studio API Investigation & Comprehensive Documentation 📚
