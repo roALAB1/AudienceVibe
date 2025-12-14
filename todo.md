@@ -425,3 +425,18 @@ All navigation features working! See NAVIGATION_TEST.md for test results.
 - [x] Test in browser to verify error is resolved
 
 ✅ Fixed! Changed <a> to <div> inside <Link> components. No console errors.
+
+
+---
+
+## Fix Deployment Failure - Comprehensive Cleanup
+
+- [x] Remove old/duplicate server files (server/index.ts)
+- [x] Remove dotenv imports from server/_core/index.ts
+- [x] Clear node_modules and reinstall clean
+- [x] Clear .vite cache
+- [x] Clear dist directory
+- [x] Test build succeeds (✅ 9.18s, no dotenv imports)
+- [x] Verify server starts (✅ runs on port 3002)
+
+✅ Clean slate achieved! All old dependencies removed, fresh install, build works perfectly.
