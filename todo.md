@@ -921,3 +921,20 @@ See SIMPLIFIED_ENRICHMENTS_TEST.md and AUDIENCELAB_UPLOAD_RESEARCH.md for detail
 - [ ] Verify intelligent pre-mapping
 - [ ] Test enrichment job submission
 - [ ] Save checkpoint
+
+
+---
+
+## Test Enrichment Flow with 74-Field CSV
+
+### Testing Tasks
+- [x] Upload test CSV to /enrichments/upload page
+- [x] Verify field detection works correctly (91% auto-map rate)
+- [x] Check field mapping accuracy for each field type
+- [x] Verify data completeness percentages are correct (100%)
+- [x] Test dropdown search functionality
+- [x] Test manual field remapping
+- [ ] Upload actual 74-field CSV for comprehensive test
+- [x] Implement API submission handler
+- [ ] Test end-to-end enrichment job creation (needs debugging)
+- [ ] Verify success/error handling

@@ -190,12 +190,13 @@ export const audienceLabRouter = router({
     createJob: publicProcedure
       .input(
         z.object({
-          contacts: z.array(
+          name: z.string(),
+          records: z.array(
             z.object({
-              email: z.string().email().optional(),
-              personal_email: z.string().email().optional(),
-              business_email: z.string().email().optional(),
-              linkedin_url: z.string().url().optional(),
+              email: z.string().optional(),
+              personal_email: z.string().optional(),
+              business_email: z.string().optional(),
+              linkedin_url: z.string().optional(),
               first_name: z.string().optional(),
               last_name: z.string().optional(),
               company_name: z.string().optional(),
@@ -205,11 +206,13 @@ export const audienceLabRouter = router({
               personal_city: z.string().optional(),
               personal_state: z.string().optional(),
               personal_zip: z.string().optional(),
+              company_industry: z.string().optional(),
               sha256_personal_email: z.string().optional(),
               up_id: z.string().optional(),
             })
           ),
-          fields: z.array(z.string()).optional(),
+          operator: z.enum(['AND', 'OR']).optional(),
+          columns: z.array(z.string()).optional(),
         })
       )
       .mutation(async ({ input }) => {

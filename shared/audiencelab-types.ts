@@ -182,11 +182,40 @@ export interface EnrichmentJob {
 }
 
 /**
- * ⚠️ NOT YET VALIDATED
- * Placeholder for POST /enrichment/jobs request
+ * POST /enrichments request
+ * Creates a bulk enrichment job
  */
 export interface CreateEnrichmentJobRequest {
-  [key: string]: any;
+  /** Name of the enrichment job */
+  name: string;
+  /** Array of records to enrich */
+  records: EnrichmentRecord[];
+  /** Match operator (default: "OR") */
+  operator?: 'AND' | 'OR';
+  /** Explicit list of fields included in each record (UPPERCASE) */
+  columns?: string[];
+}
+
+/**
+ * Single enrichment record with lowercase field names
+ */
+export interface EnrichmentRecord {
+  email?: string;
+  personal_email?: string;
+  business_email?: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  personal_address?: string;
+  personal_city?: string;
+  personal_state?: string;
+  personal_zip?: string;
+  company_name?: string;
+  company_domain?: string;
+  company_industry?: string;
+  sha256_personal_email?: string;
+  linkedin_url?: string;
+  up_id?: string;
 }
 
 /**

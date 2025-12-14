@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 import { Upload, X, ArrowLeftRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -109,9 +110,46 @@ export default function EnrichmentUploadPage() {
       return;
     }
 
-    // TODO: Submit to API
-    toast.success('Enrichment job created successfully');
-    setLocation('/enrichments');
+    if (!csvData || !file) {
+      toast.error('No CSV file uploaded');
+      return;
+    }
+
+    try {
+      // Transform CSV data + mappings to API format
+      const mappedColumns = fieldMappings
+        .filter(m => m.mappedField && m.mappedField !== '')
+        .map(m => m.mappedField);
+
+      const records = csvData.rows.map(row => {
+        const record: any = {};
+        fieldMappings.forEach(mapping => {
+          if (mapping.mappedField && mapping.mappedField !== '') {
+            // Convert UPPERCASE field to lowercase for API
+            const apiField = mapping.mappedField.toLowerCase();
+            const value = row[mapping.csvColumn];
+            if (value && value.trim() !== '') {
+              record[apiField] = value.trim();
+            }
+          }
+        });
+        return record;
+      });
+
+      // Create enrichment job
+      const result = await trpc.audienceLab.enrichment.createJob.mutate({
+        name: file.name.replace('.csv', ''),
+        records,
+        operator: 'OR',
+        columns: mappedColumns,
+      });
+
+      toast.success('Enrichment job created successfully');
+      setLocation('/enrichments');
+    } catch (error: any) {
+      console.error('Failed to create enrichment job:', error);
+      toast.error(error.message || 'Failed to create enrichment job');
+    }
   };
 
   const isValid = csvData && validateMappings(fieldMappings).isValid;
