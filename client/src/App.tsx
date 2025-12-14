@@ -4,6 +4,7 @@ import SparkPage from './pages/SparkPage';
 import AudiencesPage from './pages/AudiencesPage';
 import PixelsPage from './pages/PixelsPage';
 import EnrichmentsPage from './pages/EnrichmentsPage';
+import ChangelogPage from './pages/ChangelogPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/audiences" component={AudiencesPage} />
         <Route path="/pixels" component={PixelsPage} />
         <Route path="/enrichments" component={EnrichmentsPage} />
+        <Route path="/changelog" component={ChangelogPage} />
         
         {/* 404 fallback */}
         <Route>
