@@ -319,3 +319,44 @@ Fixed: Rewrote CSV parser to use character-by-character parsing with quote state
 - [x] Write tests using official format
 - [x] Test with real API and verify success (3/3 tests passed)
 - [x] Update all documentation references to point to official docs
+
+
+---
+
+## Build Audiences Management UI
+
+- [ ] Create client/src/pages/AudiencesPage.tsx with list view
+- [ ] Create client/src/components/audiences/AudienceTable.tsx
+- [ ] Create client/src/components/audiences/CreateAudienceDialog.tsx
+- [ ] Add pagination support (page, pageSize)
+- [ ] Add search/filter functionality
+- [ ] Add delete confirmation dialog
+- [ ] Add loading states and error handling
+- [ ] Add route to App.tsx
+- [ ] Test in browser (list, create, delete)
+- [ ] Mark todo items as complete
+
+
+---
+
+## Document tRPC Router Structure
+
+- [x] Create TRPC_ROUTER_STRUCTURE.md documenting two routers
+- [x] Document audienceLab router (enrichment only)
+- [x] Document audienceLabAPI router (audiences, pixels, segments)
+- [x] Add quick reference table
+- [x] Add common mistakes section
+- [ ] Update README.md with link to router documentation
+
+
+---
+
+## Project Summary Documentation
+
+- [x] Create PROJECT_SUMMARY.md with all validated findings
+- [x] Document all working endpoints (GET /audiences, GET /pixels, POST /audiences)
+- [x] Document two-router structure (audienceLab vs audienceLabAPI)
+- [x] Remove all incorrect assumptions from documentation
+- [x] List all built features and their status
+- [x] Document known issues and next steps
+- [x] Update README.md with link to PROJECT_SUMMARY.md
