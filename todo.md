@@ -734,3 +734,50 @@ See CHANGELOG_PAGE_TEST.md for comprehensive test results!
 - Download button on completed enrichments
 - Toast notifications for progress and errors
 - Comprehensive unit tests (9 tests, all passing)
+
+
+---
+
+## Research Real AudienceLab Enrichment Workflow
+
+- [ ] Access AudienceLab dashboard at https://app.audiencelab.com
+- [ ] Log in with credentials from environment variables
+- [ ] Navigate to enrichment section
+- [ ] Document actual enrichment creation workflow
+- [ ] Document enrichment job structure and fields
+- [ ] Document enrichment status lifecycle
+- [ ] Examine API endpoints and request/response formats
+- [ ] Update data models to match real API
+- [ ] Update UI to match actual workflow
+- [ ] Test with real enrichment jobs
+
+
+---
+
+## Simplify Enrichments to Match AudienceLab Exactly
+
+- [x] Remove stats cards from EnrichmentsPage
+- [x] Remove filters (status, type) from EnrichmentsPage
+- [x] Keep search functionality (AudienceLab has search)
+- [x] Remove detailed modal with progress/logs
+- [x] Remove pause/resume/delete actions
+- [x] Remove real-time polling
+- [x] Remove NewEnrichmentDialog wizard
+- [x] Simplify to basic table: Name, Status, Creation Date
+- [x] Keep Upload button
+- [x] Create simple EnrichmentUploadPage (/enrichments/upload)
+- [x] Add drag-and-drop CSV upload
+- [x] Add Submit Enrichment button
+- [x] Update routes in App.tsx
+- [x] Test simplified workflow
+
+✅ Simplification complete! One-for-one copy of AudienceLab:
+- Basic table with Name, Status, Creation Date columns
+- Search by name input
+- Upload button → /enrichments/upload page
+- Simple drag-and-drop CSV upload
+- Submit Enrichment button
+- No fancy features (stats, filters, modals, actions, polling)
+- Clean, minimal design matching AudienceLab exactly
+
+See SIMPLIFIED_ENRICHMENTS_TEST.md and AUDIENCELAB_UPLOAD_RESEARCH.md for details!
