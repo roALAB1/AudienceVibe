@@ -5,11 +5,13 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { audienceLabRouter } from "./audienceLabRouter";
 import { audienceLabRouter as audienceLabAPIRouter } from "./routers/audiencelab";
+import { apiLogsRouter } from "./routers/apiLogs";
 
 export const appRouter = router({
   system: systemRouter,
   audienceLab: audienceLabRouter,
   audienceLabAPI: audienceLabAPIRouter,
+  apiLogs: apiLogsRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

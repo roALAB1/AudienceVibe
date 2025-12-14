@@ -7,6 +7,7 @@ import EnrichmentsPage from './pages/EnrichmentsPage';
 import EnrichmentUploadPage from './pages/EnrichmentUploadPage';
 import ChangelogPage from './pages/ChangelogPage';
 import AudienceFilterBuilderPage from './pages/AudienceFilterBuilderPage';
+import ApiLogsPage from './pages/ApiLogsPage';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/enrichments" component={EnrichmentsPage} />
         <Route path="/enrichments/upload" component={EnrichmentUploadPage} />
         <Route path="/changelog" component={ChangelogPage} />
+        <Route path="/api-logs" component={ApiLogsPage} />
         
         {/* 404 fallback */}
         <Route>

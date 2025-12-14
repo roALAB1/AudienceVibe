@@ -28,6 +28,7 @@ import type {
 } from './audiencelab-types';
 
 import { AudienceLabAPIError } from './audiencelab-types';
+import { apiLogger } from './apiLogger';
 
 export class AudienceLabClient {
   private baseURL: string;
@@ -41,7 +42,7 @@ export class AudienceLabClient {
   }
 
   /**
-   * Make an HTTP request with retry logic
+   * Make an HTTP request with retry logic and comprehensive logging
    */
   private async request<T>(
     method: string,
@@ -50,9 +51,12 @@ export class AudienceLabClient {
       body?: any;
       params?: Record<string, string | number>;
       retryCount?: number;
+      userId?: number;
     }
   ): Promise<T> {
     const retryCount = options?.retryCount || 0;
+    const correlationId = apiLogger.generateCorrelationId();
+    const startTime = Date.now();
     
     // Build URL with query params
     const url = new URL(path, this.baseURL);
@@ -76,6 +80,15 @@ export class AudienceLabClient {
       requestInit.body = JSON.stringify(options.body);
     }
 
+    // Log API request
+    apiLogger.logRequest({
+      correlationId,
+      endpoint: path,
+      method,
+      requestBody: options?.body,
+      userId: options?.userId,
+    });
+
     // Debug logging (only in test environment)
     if (process.env.NODE_ENV === 'test' || process.env.DEBUG_API === 'true') {
       console.log(`\n[API Client] ${method} ${url.toString()}`);
@@ -98,7 +111,21 @@ export class AudienceLabClient {
 
       // Handle successful responses
       if (response.ok) {
-        return await response.json();
+        const responseData = await response.json();
+        const durationMs = Date.now() - startTime;
+        
+        // Log successful response
+        apiLogger.logResponse({
+          correlationId,
+          endpoint: path,
+          method,
+          statusCode: response.status,
+          responseBody: responseData,
+          durationMs,
+          userId: options?.userId,
+        });
+        
+        return responseData;
       }
 
       // Handle error responses
@@ -143,6 +170,20 @@ export class AudienceLabClient {
         });
       }
 
+      // Log error before throwing
+      const durationMs = Date.now() - startTime;
+      apiLogger.logError({
+        correlationId,
+        endpoint: path,
+        method,
+        statusCode: response.status,
+        errorMessage: errorData.error?.message || errorData.message,
+        requestBody: options?.body,
+        responseBody: errorData,
+        durationMs,
+        userId: options?.userId,
+      });
+      
       // Throw error if no retry or max retries exceeded
       throw new AudienceLabAPIError(
         errorData.error?.code || 'UNKNOWN_ERROR',
@@ -153,10 +194,27 @@ export class AudienceLabClient {
       if (error instanceof AudienceLabAPIError) {
         throw error;
       }
+      
+      // Log network error
+      const durationMs = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      
+      apiLogger.logError({
+        correlationId,
+        endpoint: path,
+        method,
+        errorMessage,
+        errorStack,
+        requestBody: options?.body,
+        durationMs,
+        userId: options?.userId,
+      });
+      
       // Network error or other unexpected error
       throw new AudienceLabAPIError(
         'NETWORK_ERROR',
-        error instanceof Error ? error.message : 'An unexpected error occurred'
+        errorMessage
       );
     }
   }

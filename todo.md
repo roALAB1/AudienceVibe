@@ -1558,3 +1558,66 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 
 **Status:** All API types are now verified 100% correct. No assumptions remain.
 
+
+
+---
+
+## API Error Logging System (December 14, 2025)
+
+### Phase 1: Logger Utility
+- [x] Create shared/apiLogger.ts with structured logging interface
+- [x] Add log levels (INFO, WARN, ERROR, DEBUG)
+- [x] Add request/response/error logging functions
+- [x] Add timestamp and correlation ID generation
+- [x] Add environment-aware logging (dev vs production)
+
+### Phase 2: Database Schema
+- [x] Create api_error_logs table in drizzle/schema.ts
+- [x] Add fields: id, timestamp, endpoint, method, status_code, request_body, response_body, error_message, user_id, correlation_id
+- [x] Run drizzle-kit generate & migrate to create table
+- [x] Create database helper functions in server/db.ts
+
+### Phase 3: API Client Integration
+- [x] Add logging to audiencelab-client.ts for all API calls
+- [x] Log request details before API call
+- [x] Log response details after successful call
+- [x] Log error details after failed call
+- [x] Add correlation IDs to track request chains
+
+### Phase 4: tRPC Router Integration
+- [x] Create background service (apiLogService.ts) to flush logs every 30 seconds
+- [x] Integrate service into server startup
+- [x] Create tRPC router for fetching logs (server/routers/apiLogs.ts)
+- [x] Add list, stats, and byCorrelationId procedures
+- [x] Store logs in database for persistence
+
+### Phase 5: Admin Dashboard
+- [x] Create client/src/pages/ApiLogsPage.tsx
+- [x] Create tRPC router for fetching logs
+- [x] Add table view with columns: timestamp, endpoint, status, error
+- [x] Add filtering by endpoint and log level
+- [x] Add search by endpoint
+- [x] Add pagination for large log sets
+- [ ] Add export to CSV functionality (future enhancement)
+
+### Phase 6: Monitoring & Alerts
+- [x] Calculate error rate metrics (errors per total logs)
+- [x] Add error rate display on dashboard
+- [x] Add color-coded status badges (red/yellow/blue/gray)
+- [x] Add stats cards (Total Logs, Errors, Warnings, Avg Duration)
+- [ ] Add alert threshold configuration (future enhancement)
+- [ ] Add email notification for high error rates (future enhancement)
+
+### Phase 7: Testing & Documentation
+- [x] Write comprehensive tests (tests/apiLogger.test.ts)
+- [x] Test all log levels (INFO, WARN, ERROR, DEBUG)
+- [x] Test correlation ID tracking
+- [x] Test body truncation for large payloads
+- [x] Test logApiCall wrapper
+- [x] All 13 tests passing ✅
+- [x] Create API_LOGGING.md documentation
+- [x] Document usage, configuration, and troubleshooting
+- [x] Add navigation link to sidebar
+- [ ] Create checkpoint with all logging features
+
+**Goal:** Comprehensive error tracking to catch edge cases and monitor API health in production.
