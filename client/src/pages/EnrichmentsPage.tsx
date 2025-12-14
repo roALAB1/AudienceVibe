@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, Database, TrendingUp, Users, X, Filter } from "lucide-react";
+import { Search, Plus, Database, TrendingUp, Users, X, Filter, Calendar, Clock, CheckCircle2, Pause, Play, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,6 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 interface Enrichment {
   id: string;
@@ -59,6 +67,15 @@ const mockEnrichments: Enrichment[] = [
   },
 ];
 
+// Mock activity logs
+const mockLogs = [
+  { time: "2025-12-13 14:30", message: "Enrichment job started", type: "info" },
+  { time: "2025-12-13 14:32", message: "Processing batch 1 of 10", type: "info" },
+  { time: "2025-12-13 14:35", message: "500 records enriched successfully", type: "success" },
+  { time: "2025-12-13 14:40", message: "Processing batch 2 of 10", type: "info" },
+  { time: "2025-12-13 14:42", message: "Rate limit encountered, retrying...", type: "warning" },
+];
+
 const enrichmentTypeIcons = {
   contact: Users,
   company: Database,
@@ -79,6 +96,8 @@ export default function EnrichmentsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [enrichments] = useState<Enrichment[]>(mockEnrichments);
+  const [selectedEnrichment, setSelectedEnrichment] = useState<Enrichment | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Combined filtering logic
   const filteredEnrichments = enrichments.filter((enrichment) => {
@@ -107,6 +126,18 @@ export default function EnrichmentsPage() {
     setSearchQuery("");
     setStatusFilter("all");
     setTypeFilter("all");
+  };
+
+  // Open modal with selected enrichment
+  const openEnrichmentDetails = (enrichment: Enrichment) => {
+    setSelectedEnrichment(enrichment);
+    setIsModalOpen(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedEnrichment(null), 200); // Clear after animation
   };
 
   return (
@@ -235,7 +266,7 @@ export default function EnrichmentsPage() {
             </div>
 
             {/* Type Filter Dropdown */}
-            <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as TypeFilter)}>
+            <Select value={typeFilter} onValueChange={(value: string) => setTypeFilter(value as TypeFilter)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Types" />
               </SelectTrigger>
@@ -293,7 +324,11 @@ export default function EnrichmentsPage() {
                 (enrichment.recordsProcessed / enrichment.totalRecords) * 100;
 
               return (
-                <Card key={enrichment.id} className="hover:shadow-md transition-shadow">
+                <Card 
+                  key={enrichment.id} 
+                  className="hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => openEnrichmentDetails(enrichment)}
+                >
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4">
@@ -353,6 +388,152 @@ export default function EnrichmentsPage() {
           )}
         </div>
       </div>
+
+      {/* Enrichment Details Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          {selectedEnrichment && (
+            <>
+              <DialogHeader>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                    {(() => {
+                      const Icon = enrichmentTypeIcons[selectedEnrichment.type];
+                      return <Icon className="w-6 h-6 text-primary" />;
+                    })()}
+                  </div>
+                  <div className="flex-1">
+                    <DialogTitle className="text-2xl">{selectedEnrichment.name}</DialogTitle>
+                    <DialogDescription className="mt-2">
+                      {selectedEnrichment.type.charAt(0).toUpperCase() + selectedEnrichment.type.slice(1)} enrichment • Created on {new Date(selectedEnrichment.createdAt).toLocaleDateString()}
+                    </DialogDescription>
+                  </div>
+                  <Badge variant="outline" className={statusColors[selectedEnrichment.status]}>
+                    {selectedEnrichment.status.charAt(0).toUpperCase() + selectedEnrichment.status.slice(1)}
+                  </Badge>
+                </div>
+              </DialogHeader>
+
+              <Separator className="my-4" />
+
+              {/* Progress Section */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Progress</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Records Processed</span>
+                    <span className="font-medium">
+                      {selectedEnrichment.recordsProcessed.toLocaleString()} / {selectedEnrichment.totalRecords.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="h-3 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-300"
+                      style={{ width: `${(selectedEnrichment.recordsProcessed / selectedEnrichment.totalRecords) * 100}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>{((selectedEnrichment.recordsProcessed / selectedEnrichment.totalRecords) * 100).toFixed(1)}% complete</span>
+                    <span>Est. {selectedEnrichment.totalRecords - selectedEnrichment.recordsProcessed} remaining</span>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Details Section */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Details</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Calendar className="w-4 h-4" />
+                      <span>Created</span>
+                    </div>
+                    <p className="font-medium">{new Date(selectedEnrichment.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      <span>Duration</span>
+                    </div>
+                    <p className="font-medium">
+                      {selectedEnrichment.status === "completed" ? "2h 15m" : "1h 45m (ongoing)"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Success Rate</span>
+                    </div>
+                    <p className="font-medium">
+                      {selectedEnrichment.status === "completed" ? "100%" : "94.2%"}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Database className="w-4 h-4" />
+                      <span>Type</span>
+                    </div>
+                    <p className="font-medium capitalize">{selectedEnrichment.type}</p>
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Activity Log */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Activity Log</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {mockLogs.map((log, index) => (
+                    <div key={index} className="flex items-start gap-3 text-sm p-2 rounded-lg hover:bg-muted/50">
+                      <span className="text-muted-foreground min-w-[120px]">{log.time}</span>
+                      <span className={
+                        log.type === "success" ? "text-green-600" :
+                        log.type === "warning" ? "text-yellow-600" :
+                        log.type === "error" ? "text-red-600" :
+                        "text-foreground"
+                      }>{log.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  {selectedEnrichment.status === "active" && (
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Pause className="w-4 h-4" />
+                      Pause
+                    </Button>
+                  )}
+                  {selectedEnrichment.status === "pending" && (
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Play className="w-4 h-4" />
+                      Start
+                    </Button>
+                  )}
+                  {selectedEnrichment.status === "completed" && (
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="w-4 h-4" />
+                      Download Results
+                    </Button>
+                  )}
+                  <Button variant="outline" size="sm" className="gap-2 text-destructive hover:bg-destructive/10">
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </Button>
+                </div>
+                <Button onClick={closeModal}>Close</Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
