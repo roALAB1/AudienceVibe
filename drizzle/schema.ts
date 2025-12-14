@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, json, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -50,3 +50,20 @@ export type ApiErrorLog = typeof apiErrorLogs.$inferSelect;
 export type InsertApiErrorLog = typeof apiErrorLogs.$inferInsert;
 
 // TODO: Add your tables here
+
+/**
+ * Audience Filter Configurations table
+ * Stores filter settings for Vibe Code audience creation
+ * Links to AudienceLab audience IDs for retrieval and editing
+ */
+export const audienceFilterConfigs = mysqlTable("audience_filter_configs", {
+  id: int("id").autoincrement().primaryKey(),
+  audienceId: varchar("audienceId", { length: 255 }).notNull().unique(), // AudienceLab audience ID
+  audienceName: varchar("audienceName", { length: 255 }).notNull(),
+  filterData: json("filterData").$type<Record<string, any>>().notNull(), // Stores complete AudienceFilters object
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AudienceFilterConfig = typeof audienceFilterConfigs.$inferSelect;
+export type InsertAudienceFilterConfig = typeof audienceFilterConfigs.$inferInsert;

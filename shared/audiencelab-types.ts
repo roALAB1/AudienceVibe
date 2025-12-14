@@ -47,14 +47,61 @@ export interface AudiencesListResponse {
 export interface CreateAudienceRequest {
   name: string;                    // REQUIRED - Audience name
   filters: {
+    // Location filters (3 validated)
+    city?: string[];               // Array of city names
+    state?: string[];              // Array of state names
+    zip?: string[];                // Array of zip codes
+    
+    // Age filter (1 validated)
     age?: {
       minAge?: number;
       maxAge?: number;
     };
-    city?: string[];
+    
+    // Gender filter (1 validated)
+    gender?: string[];             // Array of gender values
+    
+    // Business Profile filters (9 validated)
     businessProfile?: {
-      industry?: string[];
+      jobTitle?: string[];         // Job titles
+      seniority?: string[];        // Seniority levels
+      industry?: string[];         // Industries
+      department?: string[];       // Departments
+      companyName?: string[];      // Company names
+      companyDomain?: string[];    // Company domains
+      companyDescription?: string[]; // Company descriptions
+      employeeCount?: string[];    // Employee count ranges
+      companyRevenue?: string[];   // Revenue ranges
     };
+    
+    // Profile filters (5 validated)
+    profile?: {
+      incomeRange?: string[];      // Income ranges
+      homeowner?: string[];        // Homeowner status (Y/N)
+      married?: string[];          // Marital status (Y/N)
+      netWorth?: string[];         // Net worth ranges
+      children?: string[];         // Has children (Y/N)
+    };
+    
+    // Attributes filters (9 validated)
+    attributes?: {
+      credit_rating?: string[];    // Credit rating values
+      language_code?: string[];    // Language codes
+      education?: string[];        // Education levels
+      dwelling_type?: string[];    // Dwelling types
+      marital_status?: string[];   // Marital status codes
+      occupation_type?: string[];  // Occupation types
+      smoker?: string[];           // Smoker status (Y/N)
+      ethnic_code?: string[];      // Ethnicity codes
+      home_year_built?: {          // Home year built range
+        min?: number | null;
+        max?: number | null;
+      };
+    };
+    
+    // Contact filters (notNulls/nullOnly)
+    notNulls?: string[];           // Fields that must be present
+    nullOnly?: string[];           // Fields that must be absent
   };
   segment?: string[];              // Optional segment IDs
   days_back?: number;              // Optional lookback period

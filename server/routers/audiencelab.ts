@@ -107,6 +107,107 @@ export const audienceLabRouter = router({
       }),
 
     /**
+     * Create audience with comprehensive filters (Vibe Code)
+     * Uses validated filter schema and mapper
+     */
+    createWithFilters: publicProcedure
+      .input(
+        z.object({
+          name: z.string().min(1, 'Audience name is required'),
+          filters: z.object({
+            business: z.any().optional(),
+            location: z.any().optional(),
+            personal: z.any().optional(),
+            financial: z.any().optional(),
+            family: z.any().optional(),
+            housing: z.any().optional(),
+            contact: z.any().optional(),
+            intent: z.any().optional(),
+          }),
+          daysBack: z.number().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        try {
+          const { createAudienceRequest } = await import('../../shared/filter-mapper');
+          const client = getClient();
+          const { getDb } = await import('../db');
+          const { audienceFilterConfigs } = await import('../../drizzle/schema');
+          
+          // Convert UI filters to API format
+          const apiRequest = createAudienceRequest(
+            input.name,
+            input.filters,
+            { daysBack: input.daysBack }
+          );
+          
+          // Create audience via AudienceLab API
+          const response = await client.createAudience(apiRequest);
+          
+          // Store filter configuration in database
+          const db = await getDb();
+          if (db) {
+            await db.insert(audienceFilterConfigs).values({
+              audienceId: response.audienceId,
+              audienceName: input.name,
+              filterData: input.filters as any,
+            });
+          }
+          
+          return {
+            audienceId: response.audienceId,
+            name: input.name,
+            filters: input.filters,
+          };
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message || 'Failed to create audience with filters',
+            cause: error,
+          });
+        }
+      }),
+
+    /**
+     * Get saved filter configuration for an audience
+     */
+    getFilters: publicProcedure
+      .input(z.object({ audienceId: z.string() }))
+      .query(async ({ input }) => {
+        try {
+          const { getDb } = await import('../db');
+          const { audienceFilterConfigs } = await import('../../drizzle/schema');
+          const { eq } = await import('drizzle-orm');
+          
+          const db = await getDb();
+          if (!db) {
+            throw new TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'Database not available',
+            });
+          }
+          
+          const results = await db
+            .select()
+            .from(audienceFilterConfigs)
+            .where(eq(audienceFilterConfigs.audienceId, input.audienceId))
+            .limit(1);
+          
+          if (results.length === 0) {
+            return null;
+          }
+          
+          return results[0];
+        } catch (error: any) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: error.message || 'Failed to fetch filter configuration',
+            cause: error,
+          });
+        }
+      }),
+
+    /**
      * Delete an audience
      */
     delete: publicProcedure

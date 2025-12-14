@@ -1654,3 +1654,56 @@ Focus on Business, Location, Intent, and Contact filters first - these cover mos
 - [ ] Deliver to user
 
 **Goal:** Professional GitHub repository with complete documentation, versioning, and releases.
+
+
+---
+
+## Vibe Code: Backend Integration (Phase 5)
+
+### Filter Mapping Layer
+- [x] Create shared/filter-mapper.ts with conversion functions
+- [x] Map Business filters → businessProfile API format
+- [x] Map Location filters → city/state/zip API format
+- [x] Map Personal filters → age/gender + attributes API format
+- [x] Map Financial filters → profile + attributes API format
+- [x] Map Family filters → profile + attributes API format
+- [x] Map Housing filters → attributes API format
+- [x] Map Contact filters → notNulls/nullOnly API format
+- [x] Map Intent filters → segment/keywords API format
+- [x] Add validation and error handling
+- [x] Create shared/types/audience-filters.ts with UI filter types
+- [ ] Write unit tests for each mapper function
+### Database Schema
+- [x] Create audience_filter_configs table in drizzle/schema.ts
+- [x] Add columns: id, audienceId, audienceName, filterData (JSON), createdAt, updatedAt
+- [x] Run drizzle-kit generate & migrate to create table
+- [ ] Add database helper functions in server/db.tsgrate
+- [ ] Create database helper functions in server/db.ts
+
+### tRPC Procedures
+- [ ] Create audiences.createWithFilters procedure
+- [ ] Create audiences.previewSize procedure (estimate audience size)
+- [ ] Create audiences.getFilterConfig procedure
+- [ ] Create audiences.updateFilterConfig procedure
+- [ ] Integrate filter mapper with createWithFilters
+- [ ] Call AudienceLab API with mapped filters
+- [ ] Store filter configuration in database
+- [ ] Add error handling and validation
+
+### End-to-End Testing
+- [ ] Write integration test for complete audience creation workflow
+- [ ] Test UI → tRPC → Filter Mapper → AudienceLab API flow
+- [ ] Test all 28 validated filter types in combination
+- [ ] Test filter configuration persistence
+- [ ] Test audience size preview
+- [ ] Test error scenarios (invalid filters, API failures)
+- [ ] Verify audience appears in audiences list
+- [ ] Verify filter config can be retrieved and edited
+
+### Frontend Integration
+- [ ] Update AudienceFilterBuilderPage to call createWithFilters
+- [ ] Add loading states during audience creation
+- [ ] Add success/error toast notifications
+- [ ] Redirect to audiences list after creation
+- [ ] Add "Preview Size" button functionality
+- [ ] Display estimated audience size before creation
