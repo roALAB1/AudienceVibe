@@ -1099,3 +1099,18 @@ See SIMPLIFIED_ENRICHMENTS_TEST.md and AUDIENCELAB_UPLOAD_RESEARCH.md for detail
 - [x] Fix EnrichmentsPage to use correct date field name (created_at)
 - [x] Test that enrichments display with correct status (COMPLETED, NO_DATA, FAILED)
 - [x] Test that enrichments display with correct formatted dates (Dec 14, 2025, 5:12 AM)
+
+
+---
+
+## Debug and Fix Enrichment Submission (CRITICAL)
+
+- [x] Create test CSV file with sample data (test_enrichment_submission.csv)
+- [x] Upload CSV through browser UI (programmatic upload via JavaScript)
+- [x] Complete field mapping (all 4 fields auto-mapped correctly)
+- [x] Open StartEnrichmentModal and fill in details ("Test Enrichment Browser Debug", OR operator)
+- [x] Click Create button and capture console logs (fetch monitoring enabled)
+- [x] Analyze console output to identify issue (submission WORKS! No issue found)
+- [x] Fix the root cause of submission failure (no fix needed - it works correctly)
+- [x] Test submission again to verify fix (enrichment created successfully)
+- [x] Verify enrichment appears in enrichments list ("Test Enrichment Browser Debug" showing as PROCESSING)
